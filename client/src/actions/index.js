@@ -14,7 +14,7 @@ export function checkEmail(state) {
 				dispatch({type:actionType.EMAIL_VALID, payload: response.data})
 			}
 		}).catch((err) => {
-			 dispatch({type:actionType.EMAIL_INVALID, payload: err.response})
+			 dispatch({type:actionType.EMAIL_INVALID, payload: err.response.data})
 		})
 	}
 
@@ -63,7 +63,7 @@ export function checkUser(state) {
 export function login(state){
     return function (dispatch) {
       let temp = {
-        "useroremail" : state.useroremail,
+        "username" : state.useroremail,
         "password": state.password
       }
 
@@ -286,7 +286,7 @@ export function getRecommendedProjects(props){
                         var urlCreator = window.URL || window.webkitURL;
                         var imageUrl = urlCreator.createObjectURL( blob );
                         user.bloburl = imageUrl;
-                    
+
                  });
               }
          }

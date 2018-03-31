@@ -1,4 +1,6 @@
 var rpc = new (require('./kafkarpc'))();
+var kafka = require('kafka-node');
+var KeyedMessage = kafka.KeyedMessage;
 
 //make request to kafka
 function make_request(queue_name, key, msg_payload, callback){

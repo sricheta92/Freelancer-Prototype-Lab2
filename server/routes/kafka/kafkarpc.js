@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 var conn = require('./Connection');
 
-var TIMEOUT=8000; //time to wait for response in ms
+var TIMEOUT=100000; //time to wait for response in ms
 var self;
 
 exports = module.exports =  KafkaRPC;
@@ -72,7 +72,7 @@ KafkaRPC.prototype.setupResponseQueue = function(producer,topic_name, next){
     self = this;
 
     //subscribe to messages
-    var consumer = self.connection.getConsumer('response_topic');
+    var consumer = self.connection.getConsumer('responseTopic');
     consumer.on('message', function (message) {
         console.log('msg received');
         var data = JSON.parse(message.value);

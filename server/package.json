@@ -4,7 +4,7 @@
   "scripts": {
     "test": "mocha",
     "client": "cd ../client && yarn start",
-    "server": "nodemon --inspect=1221 server.js 1221",
+     "server": "nodemon server.js ", 
     "dev": "concurrently --kill-others-on-fail \"yarn server\" \"yarn client\""
   },
   "dependencies": {
@@ -17,6 +17,7 @@
     "express": "~4.15.5",
     "jsonwebtoken": "^8.2.0",
     "morgan": "^1.9.0",
+    "kafka-node": "^2.2.3",
     "multer": "^1.3.0",
     "mysql": "^2.15.0",
     "react-scripts": "^1.1.1",
@@ -32,7 +33,6 @@
     "passport": "^0.4.0",
     "connect-mongo": "^1.3.2",
     "passport-local": "^1.0.0",
-    "kafka-node": "^2.2.3",
     "crypto": "^1.0.1"
   },
   "devDependencies": {
