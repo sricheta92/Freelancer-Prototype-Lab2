@@ -18,7 +18,7 @@ export function checkEmail(state) {
 			}
 		}).catch((err) => {
 			 dispatch({type:actionType.EMAIL_INVALID, payload: err.response.data})
-		}) 
+		})
 	}
 
 };
