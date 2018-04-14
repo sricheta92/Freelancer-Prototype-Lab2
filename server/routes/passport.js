@@ -5,9 +5,8 @@ var kafka = require('./kafka/client');
 module.exports = function(passport) {
     passport.use('local', new LocalStrategy(function(username , password, done) {
         console.log('in passport');
-        kafka.make_request('requestTopic',"login",{"username":username,"password":password}, function(err,results){
-            console.log('in result');
-            console.log(results);
+        kafka.make_request('requestTopic',"login",{"username":username,"password":password,"key":"login"}, function(err,results){
+
             if(err){
                 console.log("ERROR");
                 done(err,{});
@@ -16,7 +15,7 @@ module.exports = function(passport) {
             {
                 if(results.code == 200){
                     console.log("Success");
-                    done(null,results);
+                    done(null,results.value);
                 }
                 else {
                     done(null,false);
@@ -26,7 +25,7 @@ module.exports = function(passport) {
     }));
 
     passport.serializeUser(function(user, done) {
-      done(null, user);
+        done(null, user);
     });
 
     passport.deserializeUser(function(user, done) {

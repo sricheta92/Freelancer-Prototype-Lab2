@@ -1,6 +1,5 @@
 import React , { Component} from 'react';
 import jQuery from 'jquery';
-import {Popover} from 'react-bootstrap';
 import NavbarAfterLogin from './NavbarAfterLogin';
 import NavBeforeLogin from './NavBeforeLogin';
 import { withRouter } from 'react-router-dom';

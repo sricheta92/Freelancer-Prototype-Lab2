@@ -1,6 +1,7 @@
 import * as actionType from './ActionType';
 import fileDownload from 'react-file-download';
 import axios from 'axios';
+axios.defaults.withCredentials = true;
 
 export function checkEmail(state) {
 
@@ -73,6 +74,15 @@ export function login(state){
   				localStorage.setItem('userid', response.data.userid);
           localStorage.setItem('username', response.data.username);
           localStorage.setItem('role', response.data.primary_role);
+
+          var arrayBufferView = new Uint8Array(response.data.encodeImage.data );
+          var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+          var urlCreator = window.URL || window.webkitURL;
+          var imageUrl = urlCreator.createObjectURL( blob );
+          response.data.bloburl = imageUrl;
+          response.data.user.bloburl= imageUrl;
+          localStorage.setItem('bloburl',  response.data.bloburl);
+          console.log("URL "+   response.data.bloburl);
   			  dispatch({type:actionType.LOGIN_SUCCESS, payload: response.data})
 			  }
       }).catch((err) => {
@@ -272,7 +282,7 @@ export function mapProjectToUser(state,props){
 
 export function getRecommendedProjects(props){
   return function(dispatch){
-    return axios.get("http://localhost:5000/project/mapRecommendedProjects/"+ props.userID ).then((response) => {
+    return axios.get("http://localhost:5000/project/mapRecommendedProjects/"+ props.userID,{withCredentials: true} ).then((response) => {
        if( response.data){
 
 
@@ -287,8 +297,17 @@ export function getRecommendedProjects(props){
                         var imageUrl = urlCreator.createObjectURL( blob );
                         user.bloburl = imageUrl;
 
+
                  });
               }
+              if( project.postedBy!= undefined)
+                {
+                    var arrayBufferView = new Uint8Array( project.postedBy.encodeImage.data );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    project.postedBy.bloburl = imageUrl;
+                }
          }
 
          });
@@ -348,6 +367,26 @@ export function getAllBiddedProject(data){
   return function(dispatch){
     return axios.get("http://localhost:5000/user/biddedprojects/"+data).then((response) => {
        if( response.data){
+
+
+                           response.data.projectsBiddedByMe.map(project  =>{
+                             if(project!= undefined){
+                                if( project.usersBidded!= undefined){
+                                      project.usersBidded.map(user =>{
+
+                                          var arrayBufferView = new Uint8Array(user.encodeImage.data );
+                                          var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+                                          var urlCreator = window.URL || window.webkitURL;
+                                          var imageUrl = urlCreator.createObjectURL( blob );
+                                          user.bloburl = imageUrl;
+
+
+                                   });
+                                }
+                           }
+
+                           });
+
          dispatch({type:actionType.GET_BIDDED_PROJECTS_SUCCESS, payload: response.data})
        }
      }).catch((err) => {
@@ -367,6 +406,29 @@ export function getAllPostedProjectsbyMe(data){
   return function(dispatch){
     return axios.get("http://localhost:5000/user/postedprojects/"+data).then((response) => {
        if( response.data){
+
+
+                  response.data.projectsPostedByMe.map(project  =>{
+                    if(project!= undefined){
+                       if( project.usersBidded!= undefined){
+                             project.usersBidded.map(user =>{
+
+                                 var arrayBufferView = new Uint8Array(user.encodeImage.data );
+                                 var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+                                 var urlCreator = window.URL || window.webkitURL;
+                                 var imageUrl = urlCreator.createObjectURL( blob );
+                                 user.bloburl = imageUrl;
+
+
+                          });
+                       }
+                  }
+
+                  });
+
+              //     dispatch({type:actionType.GET_RECOMMENDED_PROJECTS_SUCCESS, payload: response.data})
+
+
          dispatch({type:actionType.GET_POSTED_PROJECTS_SUCCESS, payload: response.data})
        }
      }).catch((err) => {
@@ -386,7 +448,19 @@ export function getUserDetails(data){
      })
   }
 }
+export function handleDownload(original,file){
+  return function(dispatch){
+		return axios.get("http://localhost:5000/user/downloadFile?filepath="+file).then((response) => {
+    //  response = response.text();
+			 fileDownload(response.data, original);
 
+  const file = new File([response.blob], original);
+			 dispatch({type:actionType.FILE_DOWNLAOD_SUCCESS, payload: file})
+		}).catch((err) => {
+			 dispatch({type:actionType.FILE_DOWNLAOD_FAIL, payload: err.response})
+		})
+	}
+}
 export function downloadFile(fileName){
 	return function(dispatch){
 		return axios.get("http://localhost:5000/user/downloadFile?profilePicPath="+fileName, { responseType: 'arraybuffer' }).then((response) => {
@@ -402,4 +476,177 @@ export function downloadFile(fileName){
 			 dispatch({type:actionType.FILE_DOWNLAOD_FAIL, payload: err.response})
 		})
 	}
+}
+
+export function getProfileDetails(data){
+  return {
+    type: actionType.GET_USER_SUCCESS,
+    data
+  }
+}
+
+export function getProfileDetailsonLogin(data){
+  return {
+    type: "profileupdateeverywhere",
+    data
+  }
+}
+
+export function getUserSkills(data){
+
+  return function(dispatch){
+    let temp = data;
+    return axios.get("http://localhost:5000/user/skills/"+temp).then((response) => {
+       if( response.data){
+         dispatch({type:actionType.GET_USER_SKILL_SUCCESS, payload: response.data})
+       }
+     }).catch((err) => {
+        dispatch({type:actionType.GET_USER_SKILL_FAILURE, payload: err.response.data})
+     })
+  }
+}
+
+export function updateProfile(state, id){
+  return function(dispatch){
+    let data = {
+			"id": id,
+      "bio" :state.userdetails.bio,
+      "phone" :state.userdetails.phone,
+      "headline" :state.userdetails.prof_headline,
+      "profilePic" : state.userdetails.profilePic
+		};
+    return axios.post("http://localhost:5000/user/update",data).then((response) => {
+       if( response.data){
+         var arrayBufferView = new Uint8Array(response.data.user.encodeImage.data );
+         var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+         var urlCreator = window.URL || window.webkitURL;
+         var imageUrl = urlCreator.createObjectURL( blob );
+         response.data.user.bloburl = imageUrl;
+         response.data.user.bloburl= imageUrl;
+         localStorage.setItem('bloburl',  response.data.user.bloburl);
+         console.log("URL "+   response.data.user.bloburl);
+         dispatch({type:actionType.PROFILE_UPDATE_SUCCESS, payload: response.data})
+       }
+     }).catch((err) => {
+        dispatch({type:actionType.PROFILE_UPDATE_FAILURE, payload: err.response.data})
+     })
+  }
+}
+
+export function hireUser(user){
+  return function(dispatch){
+    let data = {
+			"hiredFreelancer": user,
+      "status" : "HIRING",
+      "submission" :{
+        comment : "",
+        file : ""
+      }
+		};
+    return axios.post("http://localhost:5000/user/hire",data).then((response) => {
+       if( response.data){
+         dispatch({type:actionType.HIRE_USER_SUCCESS, payload: response.data})
+       }
+     }).catch((err) => {
+        dispatch({type:actionType.HIRE_USER_FAILURE, payload: err.response.data})
+     })
+  }
+}
+
+export function submitProjectSolution(data){
+  return function(dispatch){
+    return axios.post("http://localhost:5000/project/submitsolution",data).then((response) => {
+       if( response.data){
+         dispatch({type:actionType.SUBMIT_PROJECT_SOLUTION_SUCCESS, payload: response.data})
+       }
+     }).catch((err) => {
+        dispatch({type:actionType.SUBMIT_PROJECT_SOLUTION_FAILURE, payload: err.response.data})
+     })
+  }
+}
+
+export function manageTransaction(data){
+  return function(dispatch){
+    return axios.post("http://localhost:5000/user/manageTransaction",data).then((response) => {
+       if( response.data){
+         dispatch({type:actionType.TRANSACTION_SUCCESSFUL, payload: response.data})
+       }
+     }).catch((err) => {
+        dispatch({type:actionType.TRANSACTION_FAILURE, payload: err.response.data})
+     })
+  }
+}
+
+export function getTransactionUserDetails(data){
+  return {
+    type: actionType.GET_TRANSACTION_USER_SUCCESS,
+    data
+  }
+}
+
+export function requestAuth(state){
+	return function (dispatch) {
+		let temp = {
+		};
+		return axios.post("http://localhost:5000/user/auth", temp).then((response) => {
+			dispatch({type:"authSuccess", payload: response.data})
+		}).catch((err) => {
+			 dispatch({type:"authFailed", payload: err.response.data})
+		})
+	}
+}
+
+
+export function requestLogout(state){
+	return function (dispatch) {
+		return axios.get("http://localhost:5000/user/logout").then((response) => {
+			dispatch({type:"logoutSuccess", payload: response.data})
+		}).catch((err) => {
+			 dispatch({type:"logoutFailed", payload: err.response.data})
+		})
+	}
+}
+
+
+export function getAllProjects(props){
+  return function(dispatch){
+    return axios.get("http://localhost:5000/project/getAllprojects/"+ props.userID,{withCredentials: true} ).then((response) => {
+       if( response.data){
+
+
+         response.data.allProjects.map(project  =>{
+           if(project!= undefined){
+              if( project.usersBidded!= undefined){
+                    project.usersBidded.map(user =>{
+
+                        var arrayBufferView = new Uint8Array(user.encodeImage.data );
+                        var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+                        var urlCreator = window.URL || window.webkitURL;
+                        var imageUrl = urlCreator.createObjectURL( blob );
+                        user.bloburl = imageUrl;
+
+
+                 });
+              }
+              if( project.postedBy!= undefined)
+                {
+                    var arrayBufferView = new Uint8Array( project.postedBy.encodeImage.data );
+                    var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+                    var urlCreator = window.URL || window.webkitURL;
+                    var imageUrl = urlCreator.createObjectURL( blob );
+                    project.postedBy.bloburl = imageUrl;
+                }
+         }
+
+         });
+
+          dispatch({type:actionType.GET_ALL_PROJECTS_SUCCESS, payload: response.data})
+       }
+
+
+     }).catch((err) => {
+       throw err;
+        dispatch({type:actionType.GET_ALL_PROJECTS_FAILURE, payload: err.response.data})
+     })
+  }
 }

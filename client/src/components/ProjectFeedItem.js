@@ -1,11 +1,11 @@
 import React,{Component} from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom'
-import { getProjectDetails, getUserDetails} from '../actions';
+import { getProjectDetails, getUserDetails,getUserSkills,getProfileDetails} from '../actions';
 
 const mapDispatchToProps = (dispatch) => {
 
-    let actions = {getProjectDetails, getUserDetails};
+    let actions = {getProjectDetails, getUserDetails,getUserSkills,getProfileDetails};
     return { ...actions, dispatch };
 
   }
@@ -22,27 +22,67 @@ class ProjectFeedItem extends Component{
 
   constructor(props){
     super(props);
+    this.state={
+      "display" : ""
+    }
     this.navigateToProjectDetails = this.navigateToProjectDetails.bind(this);
     this.navigateToUserDetails = this.navigateToUserDetails.bind(this);
   }
 
-  navigateToProjectDetails()  {
+  navigateToProjectDetails(event)  {
+    event.preventDefault();
     this.props.dispatch(this.props.getProjectDetails(this.props.projectfeeditem))
     this.props.history.push("/projectDetails");
   }
 
   navigateToUserDetails(postedby){
-    this.props.dispatch(this.props.getUserDetails(postedby.userid))
-    .then(() => this.props.history.push("/user/"+ postedby.username ));
+    this.props.dispatch(this.props.getUserSkills(postedby._id))
+    this.props.dispatch(this.props.getProfileDetails(postedby));
+    this.props.history.push("/profile");
+  }
+
+  componentWillReceiveProps(){
+    if (this.props.projectfeeditem.project.project_name.toUpperCase().indexOf(this.props.display) > -1 ||
+    this.props.projectskills.find(skill => skill.name.toUpperCase().indexOf(this.props.display) > -1 ) )
+    {
+      this.setState({"display" : ""});
+    }else{
+      this.setState({"display" : "none"});
+    }
+
+  }
+
+  componentWillMount(){
+    if(this.props.display!== ""){
+
+        if (this.props.projectfeeditem.project.project_name.toUpperCase().indexOf(this.props.display) > -1 ||
+        this.props.projectskills.find(skill => skill.name.toUpperCase().indexOf(this.props.display) > -1 ) )
+        {
+           this.setState({"display" : ""});
+        }else{
+             this.setState({"display" : "none"});
+        }
+      }
+
   }
 
   render(){
+  //      let display = this.props.display ? "" : "none";
+  // let display = "";
+  //          if (this.props.projectfeeditem.project.project_name.toUpperCase().indexOf(this.props.display) > -1) {
+  //             display = ""
+  //          }else{
+  //           display ="none"
+  //       }
+  //
+  //
+
     return(
-      <div className ="news-list-wrapper">
+      <div style = {{display :this.state.display}} className ="news-list-wrapper">
         <a onClick={this.navigateToProjectDetails}><h4 className = "" >
           {this.props.projectfeeditem.project.project_name}
         </h4></a>
-        <button className = "btn btn-success pull-right font-bold">Bid Now!</button>
+
         <span> {this.props.projectfeeditem.project.budget_range}</span>
         <div>  {this.props.projectfeeditem.project.description}</div>
         {this.props.projectskills ? this.props.projectskills.map( skill => <div>{skill.name}</div>) : null}

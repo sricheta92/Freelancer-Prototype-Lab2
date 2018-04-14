@@ -3,20 +3,26 @@ import {connect} from 'react-redux';
 import {withRouter} from "react-router-dom";
 import FixedNav from './FixedNav';
 import {Typeahead} from 'react-bootstrap-typeahead';
-import { getAllSkills ,downloadFile} from '../actions';
+import DashboardDecider from './DashboardDecider';
+import { getAllSkills ,downloadFile,handleFileUpload,updateProfile,getProfileDetails,getProfileDetailsonLogin} from '../actions';
 
 
 const mapDispatchToProps = (dispatch)=>{
-    let actions = {getAllSkills,downloadFile};
+    let actions = {getAllSkills,downloadFile,handleFileUpload,updateProfile,getProfileDetails,getProfileDetailsonLogin};
     return { ...actions, dispatch };
 }
 
 const mapStateToProps = (state) => {
+
+
     return {
-        user : state.userReducer.user,
-        skill : state.userReducer.skill,
+        user : state.userReducer.profile,
+        showDashboard : state.signupReducer.showDashboard,
+        userSkill : state.userReducer.userSkill,
         profilePic : state.userReducer.profilePic,
-        allSkills :  state.postProjectReducer.allSkills
+        allSkills :  state.postProjectReducer.allSkills,
+        uploadname :state.postProjectReducer.uploadname,
+        originalname :state.postProjectReducer.originalname
     }
 }
 
@@ -26,171 +32,236 @@ class UserProfile extends Component {
     constructor(props) {
         super(props);
         this.state = {
+          message : '',
+          file : '',
+          imagePreviewUrl : '',
             disabletags: {
-              firstname: true,
-              lastname: true,
-              email: true,
-              aboutme: true,
-              phonenumber: true,
-              skilltag: true,
+              disableTags :true,
               updatebutton : false
             },
+           selectedSkills :[],
+           userdetails: {
+                _id :  this.props.user._id,
+                bio: this.props.user.bio,
+                phone:  this.props.user.phone,
+                prof_headline : this.props.user.prof_headline,
+                bloburl : this.props.user.bloburl,
+                username : this.props.user.username,
+                city : this.props.user.city,
+                profilePic : this.props.user.profilePicPath
 
-            userdetails: {
-                userId : 1,
-                firstname: '',
-                lastname: '',
-                email: '',
-                aboutme: '',
-                phonenumber: ''
             },
 
         };
 
         this.handleOptionSelected = this.handleOptionSelected.bind(this);
-        this.editprofile = this.editprofile.bind(this);
+        this.handleEditProfile = this.handleEditProfile.bind(this);
         this.updateuserProfile = this.updateuserProfile.bind(this);
+        this.handleFile = this.handleFile.bind(this);
 
     };
 
     static defaultProps ={
-      user :[
+      user : {},
+      userSkill :[
 
       ],
-      skill :[
-
-      ],
+      showDashboard: false,
       allSkills: [],
       profilePic :''
     }
 
-    handleOptionSelected(option){
-        //.setState({userskills : option});
-        //console.log(option);
+    handleFile(e){
+      e.preventDefault();
+      let reader = new FileReader();
+      let file = e.target.files[0];
+
+      reader.onloadend = () => {
+        this.setState({
+          file: file,
+          imagePreviewUrl: reader.result
+        });
+      }
+
+      reader.readAsDataURL(file)
+      this.props.dispatch(this.props.handleFileUpload(this.props, e.target.files[0]))
     }
 
-    editprofile(option){
-        this.setState({
-            disabletags: {
-                ...this.state.disabletags,
-                firstname: false,
-                lastname: false,
-                email:false,
-                aboutme: false,
-                phonenumber: false,
-                updatebutton: true
-            }
-        });
+
+    handleOptionSelected(option){
+      this.setState({selectedSkills : option});
+      console.log(option);
+    }
+
+    handleEditProfile(){
+      this.setState({
+          disabletags: {
+              disableTags : false,
+              updatebutton: true
+          }
+      });
     }
 
 
     updateuserProfile(option){
-        this.props.dispatch(this.props.setProfile(this.state.userdetails));
+      // this.setState({
+      //   userdetails: {
+      //       ...this.state.userdetails//,
+      //     profilePic: this.props.uploadname
+      //   }
+      // },function(){
+          this.props.dispatch(this.props.updateProfile(this.state, this.props.user._id))
+          .then(()=> {
+            this.setState({
+                userdetails: {
+                    ...this.state.userdetails,
+                    bloburl: this.props.user.bloburl
+                }
+            });
+          });
+          this.setState({
+              message : "Updated successfully",
+              disabletags: {
+                  disableTags : true,
+                  updatebutton: false
+              }
+          });
+         this.props.dispatch(this.props.getProfileDetails(this.state.userdetails));
+         this.props.dispatch(this.props.getProfileDetailsonLogin(this.state.userdetails));
+      // });
+    }
+
+    componentWillReceiveProps(nextProps){
+
+        if(this.props.user !== nextProps.user){
+          this.setState({
+            userdetails : nextProps.user
+          })
+        }
+
+        if(this.props.user.profilePicPath !== nextProps.uploadname){
+            this.setState({
+                userdetails: {
+                    ...this.state.userdetails,
+                    profilePic: nextProps.uploadname
+                }
+            });
+        }
+
+        if(this.props.user.bloburl !== nextProps.user.bloburl){
+          this.setState({
+              userdetails: {
+                  ...this.state.userdetails,
+                  bloburl: nextProps.user.bloburl
+              }
+          });
+        }
+
     }
 
     componentWillMount(){
       console.log("componentWillMount");
-      this.props.dispatch(this.props.getAllSkills());
-      this.props.dispatch(this.props.downloadFile(this.props.user[0].profilePicPath))
+    //  this.props.dispatch(this.props.getUserDetails());
+
     }
 
     render() {
+      let {imagePreviewUrl} = this.state;
+      let $imagePreview = null;
+      if (imagePreviewUrl) {
+        $imagePreview = imagePreviewUrl;
+      } else {
+        $imagePreview = null;
+      }
         return (
             <div>
-            <FixedNav />
-                <div className="container-fluid">
-                    <div className= "text-left float-left"><h3>User Details</h3></div>
-                    <img height = "42" src={this.props.profilePic}/>
-                    <div><button className="btn btn-primary float-right" onClick={this.editprofile}>Edit Profile</button></div>
-                </div>
-                <div className="container-fluid panel panel-default border text-left">
-                    <div className="row ">
-                        <div className="col-sm-2 font-weight-bold">First Name:</div><input type="text" className="col-sm-4"  value={this.props.user[0].firstname} disabled = {this.state.disabletags.firstname}
-                                                                                           onChange={(event) => {
-                                                                                               this.setState({
-                                                                                                   userdetails: {
-                                                                                                       ...this.state.userdetails,
-                                                                                                       firstname: event.target.value
-                                                                                                   }
-                                                                                               });
-                                                                                           }}></input>
-                    </div>
-                    <div className="row ">
-                        <div className="col-sm-2 font-weight-bold">Last Name:</div><input type="text" className="col-sm-4"  value={this.props.user[0].lastname} disabled = {this.state.disabletags.lastname}
-                                                                                          onChange={(event) => {
-                                                                                              this.setState({
-                                                                                                  userdetails: {
-                                                                                                      ...this.state.userdetails,
-                                                                                                      lastname: event.target.value
-                                                                                                  }
-                                                                                              });
-                                                                                          }}></input>
-                    </div>
-                    <div className="row ">
-                        <div className="col-sm-2 font-weight-bold">Email Name:</div><input type="text" className="col-sm-4"  value={this.props.user[0].email} disabled = {this.state.disabletags.email}
-                                                                                           onChange={(event) => {
-                                                                                               this.setState({
-                                                                                                   userdetails: {
-                                                                                                       ...this.state.userdetails,
-                                                                                                       email: event.target.value
-                                                                                                   }
-                                                                                               });
-                                                                                           }}></input>
-                    </div>
-                    <div className="row ">
-                        <div className="col-sm-2 font-weight-bold">About Me:</div><input type="text" value = "Software Developer" className="col-sm-4"   disabled = {this.state.disabletags.aboutme}
-                                                                                         onChange={(event) => {
-                                                                                             this.setState({
-                                                                                                 userdetails: {
-                                                                                                     ...this.state.userdetails,
-                                                                                                     aboutme: event.target.value
-                                                                                                 }
-                                                                                             });
-                                                                                         }}></input>
-                    </div>
-                    <div className="row ">
-                        <div className="col-sm-2 font-weight-bold">Phone number:</div><input type="text" className="col-sm-4"  value={this.props.user[0].phone} disabled = {this.state.disabletags.phonenumber}
-                                                                                             onChange={(event) => {
-                                                                                                 this.setState({
-                                                                                                     userdetails: {
-                                                                                                         ...this.state.userdetails,
-                                                                                                         phonenumber: event.target.value
-                                                                                                     }
-                                                                                                 });
-                                                                                             }}></input>
-                    </div>
-                    <div className="row">
-                        <div className="col-sm-2 font-weight-bold">Skills:</div>
+              <FixedNav />
+              {this.props.showDashboard ? <DashboardDecider role={localStorage.getItem("role")} /> :
+              <div>
+              {this.state.message !== '' ? <div id="proposal-panel" class="center-block"><div class="alert alert-success alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a><strong>{this.state.message}</strong></div></div> : null}
+              {localStorage.getItem("userid") === this.props.user._id  || localStorage.getItem("userid") === this.props.user.userid ?
+                <a onClick = {this.handleEditProfile} className="btn btn-primary a-btn-slide-text">
+                      <span className="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                      <span><strong>Edit</strong></span>
+                  </a> : null }
+              <center>
+                       <img src={($imagePreview===null) ? this.state.userdetails.bloburl : imagePreviewUrl } name="aboutme" width="140" height="140" border="0" class="img-circle"/>
+                       <h3 className="media-heading">{this.state.userdetails.username}<small>{this.state.userdetails.city}</small></h3>
+                       {this.state.disabletags.disableTags ?
+                         <div>
+                        <span><strong>Skills: </strong></span>
+                       {this.props.userSkill.map(skill =>
+                            <span className="label label-info">{skill.skill_name}</span>
+                       )}</div> : null}
+
+                       </center>
+                       <hr/>
+                       <center>
+                         <div class=" center-block form-group row">
+                             <label for="bio" class="col-md-offset-3 col-sm-2 col-form-label">Bio</label>
+                             <div class="col-sm-2">
+                               <input className ="form-control" type="text" value = {this.state.userdetails.bio}  disabled = {this.state.disabletags.disableTags}
+                                                         onChange={(event) => {
+                                                             this.setState({
+                                                                 userdetails: {
+                                                                     ...this.state.userdetails,
+                                                                     bio: event.target.value
+                                                                 }
+                                                             });}}
+                                                          />
+                             </div>
+                           </div>
+
+                           <div class=" center-block form-group row">
+                               <label for="phone" class="col-md-offset-3 col-sm-2 col-form-label">Phone</label>
+                               <div class="col-sm-2">
+                                 <input  className ="form-control" type="text" value = {this.state.userdetails.phone}  disabled = {this.state.disabletags.disableTags}
+                                                                   onChange={(event) => {
+                                                                       this.setState({
+                                                                           userdetails: {
+                                                                               ...this.state.userdetails,
+                                                                               phone: event.target.value
+                                                                           }
+                                                                       });}}
+                                                                  />
+                               </div>
+                             </div>
+
+                             <div class=" center-block form-group row">
+                                 <label for="phone" class="col-md-offset-3 col-sm-2 col-form-label">Prof Headline</label>
+                                 <div class="col-sm-2">
+                                   <input  className ="form-control" type="text" value ={this.state.userdetails.prof_headline} disabled = {this.state.disabletags.disableTags}
+                                                                                     onChange={(event) => {
+                                                                                         this.setState({
+                                                                                             userdetails: {
+                                                                                                 ...this.state.userdetails,
+                                                                                                 prof_headline: event.target.value
+                                                                                             }
+                                                                                         });}}
+                                                                                     />
+                                 </div>
+                               </div>
+
+                       {/*{!this.state.disabletags.disableTags ?
+                         <div className = "skillEdit">
+                         <Typeahead
+                           clearButton
+                           labelKey={(option) => `${option.skill_name}`}
+                           multiple
+                           selected ={this.props.userSkill}
+                           options={this.props.allSkills}
+                           placeholder="What Skills are required? "
+                           onChange={this.handleOptionSelected}
+                         /> </div>: null }*/}
+                          {!this.state.disabletags.disableTags ?   <div className = "center-block form-group row" ><label for="phone" class="col-md-offset-3 col-sm-2 col-form-label">Change Profile Pic</label><div class="col-sm-2"> <input  className ="form-control" type="file" onChange={this.handleFile} accept=".jpg,.jpeg,.PNG"/></div></div> : null }
+                          { this.state.disabletags.updatebutton ? <button className="btn btn-primary" onClick={this.updateuserProfile}>Update</button> : null }
+
+                     </center>
 
 
-                        {/*<Typeahead
-                          clearButton
-                          multiple
-
-                          options={this.props.allSkills}
-                          placeholder="What Skills are required? "
-                          onChange={this.handleOptionSelected}
-                        />
-*/}
-                        <Typeahead
-                          clearButton
-                          labelKey={(option) => `${option.skill_name}`}
-                          multiple
-                          selected ={this.props.skill}
-                          options={this.props.allSkills}
-                          placeholder="What Skills are required? "
-                          onChange={this.handleOptionSelected}
-                        />
-
-                    </div>
-                    <div className="col-sm-2 font-weight-bold">
-                        <div className="row">
-                        { this.state.disabletags.updatebutton ? <button className="btn btn-primary" onClick={this.updateuserProfile}>Update</button> : null }
-                        </div>
-                    </div>
-
-                </div>
+               </div>}
             </div>
+
         );
     }
 }

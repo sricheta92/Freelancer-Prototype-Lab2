@@ -16,7 +16,8 @@ const mapStateToProps = (state) =>{
     originalname :state.postProjectReducer.originalname,
     username :state.signupReducer.username,
     projectid :state.postProjectReducer.projectid,
-    userID : state.loginReducer.userID,
+  //  userID : state.loginReducer.userID,
+     userID :localStorage.getItem("userid") ? localStorage.getItem("userid") :  state.signupReducer.userID,
     projectfailMsg : state.postProjectReducer.projectfailMsg
 
   }
@@ -37,7 +38,13 @@ constructor(props){
       projectdesc : '',
       budget : 'Micro Project ($10 - 30 USD)',
       selectedSkills :[],
-      role : 'Employer'
+      role : 'Employer',
+      projectnamevalid : true,
+      projectnameErrorMsg :'',
+      projectdescvalid : true,
+      projectdescErrorMsg :'',
+      skillsvalid : true,
+      skillsErrorMsg : ''
     }
     this.handlePostProject = this.handlePostProject.bind(this);
     this.handleProjectNameChange = this.handleProjectNameChange.bind(this);
@@ -52,10 +59,6 @@ constructor(props){
     console.log("componentWillMount");
     this.props.dispatch(getAllSkills());
   }
-  //
-  // componentWillReceiveProps() {
-  //    window.previousLocation = this.props.location
-  //  }
 
   handleFileUpload(e) {
     if(this.props.uploadname=== undefined){
@@ -67,34 +70,74 @@ constructor(props){
 	}
 
   handleOptionSelected(option){
-    this.setState({selectedSkills : option});
-    console.log(option);
+    let elementValue = option.length;
+      if(elementValue == 0){
+        this.setState({selectedSkills: option});
+         this.setState({skillsvalid :false, skillsErrorMsg: "Please select atleast one skill"});
+      }else{
+           this.setState({skillsvalid :true, skillsErrorMsg: ""});
+           this.setState({selectedSkills: option});
+      }
   }
 
   handlePostProject(e){
     console.log("hello");
-    this.props.dispatch(this.props.postProject(this.state))
-    .then(() => {
-      if(this.props.uploadname){
-        this.props.dispatch(mapfilesToProject(this.props))
+    if(this.state.projectname === '' || this.state.projectdesc === '' || this.state.selectedSkills.length ==0){
+      if(this.state.projectname === ''){
+         this.setState({projectnamevalid :false, projectnameErrorMsg: "Please enter an Project Name"});
+         e.preventDefault();
       }
-    })
-    .then(() =>  this.props.dispatch(mapSkillToProject(this.props, this.state)))
-    .then(() => this.props.dispatch(mapProjectToUser(this.state, this.props)))
-    .then(() =>  {
-      if(localStorage.getItem('jwtToken')){
-        this.props.history.push("/home")
-      }else{
-          this.props.history.push("/login")
+      if(this.state.projectdesc === ''){
+         this.setState({projectdescvalid :false, projectdescErrorMsg: "Please enter an Project Description"});
+         e.preventDefault();
       }
-    });
+      if(this.state.selectedSkills.length ==0){
+         this.setState({skillsvalid :false, skillsErrorMsg: "Please select atleast one skill"});
+         e.preventDefault();
+      }
+    }else{
+
+        this.props.dispatch(this.props.postProject(this.state))
+        .then(() => {
+          if(this.props.uploadname){
+            this.props.dispatch(mapfilesToProject(this.props))
+          }
+        })
+        .then(() =>  this.props.dispatch(mapSkillToProject(this.props, this.state)))
+        .then(() => this.props.dispatch(mapProjectToUser(this.state, this.props)))
+        .then(() =>  {
+          if(localStorage.getItem("userid")){
+              this.props.history.push("/home")
+          }else{
+              this.props.history.push("/completeProfile")
+          }
+
+
+        });
+  }
 
   }
   handleProjectNameChange(e){
-     this.setState({projectname: e.target.value});
+    let elementValue = e.target.value;
+    if(elementValue === ''){
+       this.setState({projectname: e.target.value});
+       this.setState({projectnamevalid :false, projectnameErrorMsg: "Please enter an Project Name"});
+    }else{
+      this.setState({projectnamevalid :true, projectnameErrorMsg: ""});
+       this.setState({projectname: e.target.value});
+    }
   }
+
   handleProjectDescChange(e){
-   this.setState({projectdesc: e.target.value});
+  let elementValue = e.target.value;
+    if(elementValue == ''){
+      this.setState({projectdesc: e.target.value});
+       this.setState({projectdescvalid :false, projectdescErrorMsg: "Please enter an Project description"});
+    }else{
+         this.setState({projectdescvalid :true, projectdescErrorMsg: ""});
+         this.setState({projectdesc: e.target.value});
+    }
+
  }
  handleOptionChange(e){
    this.setState({
@@ -127,7 +170,8 @@ constructor(props){
             <h4><strong>Choose a name for your project</strong></h4>
             <div className="project-header-desc">
               <input type = "text" className= "large-input project-input" placeholder= "e.g. Build me a website"  value={this.state.projectname} onChange={this.handleProjectNameChange} required/>
-            </div>
+              <div className={this.state.projectnamevalid ? 'success' : 'text-input-error-wrapper'}>{this.state.projectnameErrorMsg}</div>
+          </div>
           </div>
 
           <div className = "row gap">
@@ -136,7 +180,8 @@ constructor(props){
             Great project descriptions include a little bit about yourself, details of what you are trying to achieve, and any decisions that you have already made about your project. If there are things you are unsure of, don&apos;t worry, a freelancer will be able to help you fill in the blanks.
             </div>
             <textarea className = "project-more-desc"  value={this.state.projectdesc} onChange={this.handleProjectDescChange}  required></textarea>
-          </div>
+            <div className={this.state.projectdescvalid ? 'success' : 'text-input-error-wrapper'}>{this.state.projectdescErrorMsg}</div>
+         </div>
           <div  className = "row gap file-uploader-area">
               <span className="btn btn-plain btn-file-uploader">
                 <span className="glyphicon glyphicon-plus gyp-project"></span>
@@ -165,6 +210,7 @@ constructor(props){
                 placeholder="What Skills are required? "
                 onChange={this.handleOptionSelected}
               />
+            <div className={this.state.skillsvalid ? 'success' : 'text-input-error-wrapper'}>{this.state.skillsErrorMsg}</div>
           </div>
 
           <div className = "row gap">

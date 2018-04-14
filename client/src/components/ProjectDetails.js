@@ -3,18 +3,25 @@ import { connect } from 'react-redux';
 import FixedNav from './FixedNav';
 import BidForm from './BidForm';
 import UserBidList from './UserBidList';
-
+import SubmissionFreelancer from './SubmissionFreelancer';
+import SubmissionEmployer from './SubmissionEmployer';
+import AddMoneyComponent from './AddMoneyComponent';
+import { manageTransaction,getProjectDetails} from '../actions';
+import {Modal,Button} from 'react-bootstrap';
 
 const mapDispatchToProps = (dispatch) => {
 
-    let actions = {};
+    let actions = {manageTransaction,getProjectDetails};
     return { ...actions, dispatch };
 
   }
 
 const mapStateToProps = (state) => {
     return {
-      project: state.postProjectReducer.project
+      project: state.postProjectReducer.project,
+      hireStatus : state.userReducer.hireStatus,
+      solutionSubmitStatus : state.userReducer.solutionSubmitStatus,
+      solutionSubmitMessage :state.userReducer.solutionSubmitMessage
     }
 }
 
@@ -25,25 +32,60 @@ class ProjectDetails extends Component{
     super(props);
     this.state={
       showComponent : false,
-      averageBid : 0
+      averageBid : 0,
+      addMoneyComponenet :false
     };
     this.toggleBidForm = this.toggleBidForm.bind(this);
+    this.makePayment = this.makePayment.bind(this);
+    this.close = this.close.bind(this);
+    this.addMoney = this.addMoney.bind(this);
   }
 
   static defaultProps = {
      project: {
        project :{
-                   projectname :'',
+                projectname :'',
                  },
        skills :[{
          name :''
        }],
        usersBidded : [],
-       file :''
+       file :'',
+       solutionSubmitStatus :false,
+       solutionSubmitMessage :''
 
      }
   }
 
+  addMoney(){
+
+   let data = {
+          project : this.props.project.project,
+          postedby : localStorage.getItem("userid")
+   }
+    this.props.dispatch(this.props.manageTransaction(data));
+    this.props.dispatch(this.props.getProjectDetails(this.props.project.project))
+    this.props.history.push("/transaction");
+  }
+
+makePayment(){
+
+
+     let data = {
+      project : this.props.project.project,
+      postedby : localStorage.getItem("userid")
+    }
+    if(this.props.project.project.hiredFreelancer.wallet === undefined){
+        this.setState({
+          addMoneyComponenet : true
+        })
+    }else{
+        this.props.dispatch(this.props.manageTransaction(data));
+        this.props.dispatch(this.props.getProjectDetails(this.props.project.project))
+        this.props.history.push("/transaction");
+      }
+
+}
 toggleBidForm(){
    this.setState(function(prevState) {
      return {showComponent: !prevState.showComponent};
@@ -60,10 +102,34 @@ componentWillMount(){
    bidAverage = sum/data.length;
    this.setState({averageBid : bidAverage});
 }
+
+close() {
+   this.setState({ addMoneyComponenet: false });
+ }
+
 render(){
   return(
     <div>
       <FixedNav />
+      {this.state.addMoneyComponenet ?
+
+        <Modal show={this.state.addMoneyComponenet} onHide={this.close}>
+                <Modal.Header closeButton>
+                  <Modal.Title>Add Money</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <AddMoneyComponent triggerAddMoney = {this.addMoney}  amount = {this.props.project.project.hiredFreelancer.bid_price} />
+                  <hr />
+
+                </Modal.Body>
+                <Modal.Footer>
+                  <Button onClick={this.close}>Close</Button>
+                </Modal.Footer>
+              </Modal>
+
+        : null}
+      {this.props.solutionSubmitStatus ?
+      <div id="proposal-panel" class="center-block"><div class="alert alert-success alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a><strong>{this.props.solutionSubmitMessage}</strong></div></div> :null}
       <div className = "gaf-container" >
       <div id="projectHeader">
                 <div className="project-header-controls span8">
@@ -91,7 +157,8 @@ render(){
                   </span>
               </div>
               <div>
-                <button className = "btn btn-success pull-right font-bold" onClick = {this.toggleBidForm}>Bid Now!</button>
+                {this.props.project.postedBy._id !== localStorage.getItem("userid") && this.props.project.project.status === 'OPEN'?
+                <button className = "btn btn-success pull-right font-bold" onClick = {this.toggleBidForm}>Bid Now!</button> : null}
 
               </div>
             </div>
@@ -107,14 +174,25 @@ render(){
         </div>
         {this.props.project.file ?
         <div className = "project-details-div">
-          <h5 className = "project-subheader">Files : </h5>
+          <h5 className = "project-subheader">Project related files : </h5>
           <span>{this.props.project.file}</span>
         </div> :null }
         {this.state.showComponent ?
            <BidForm projectID = {this.props.project.project.project_id}/> :
            null
         }
-        <UserBidList users = {this.props.project.usersBidded}/>
+        {this.props.project.project.status === 'OPEN' ?
+        <UserBidList project = {this.props.project} postedby = {this.props.project.postedBy._id} users = {this.props.project.usersBidded} />
+        :
+        <div>
+          {localStorage.getItem("userid") === this.props.project.project.hiredFreelancer.userid  ? <SubmissionFreelancer  project = {this.props.project.project}/>
+        : <div>{localStorage.getItem("userid") === this.props.project.postedBy._id ? <SubmissionEmployer triggerAddFormComponent={this.makePayment} project = {this.props.project.project}/> :
+        <div class="alert alert-danger center-block">
+          <strong>Hiring Closed!!!</strong> 
+        </div>
+      }</div>}
+        </div>
+        }
 
     </div>
   )

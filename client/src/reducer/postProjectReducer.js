@@ -44,6 +44,10 @@ export function postProjectReducer(state, action){
 
     case actionType.GET_RECOMMENDED_PROJECTS_SUCCESS : newState.projectsWithSkills = action.payload.projectsWithSkills;
                                                       return newState;
+    case actionType.GET_ALL_PROJECTS_SUCCESS : newState.allprojects = action.payload.allProjects;
+                                               return newState;
+    case actionType.GET_ALL_PROJECTS_FAILURE : newState.allprojects = undefined;
+                                                  return newState;
 
     case actionType.GET_RECOMMENDED_PROJECTS_FAILURE : newState.projectsWithSkills = undefined;
                                                       return newState;

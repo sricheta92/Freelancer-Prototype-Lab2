@@ -7,6 +7,9 @@ import CompleteProfile from './CompleteProfile';
 import ProjectDetails from './ProjectDetails';
 import { Route, withRouter } from 'react-router-dom';
 import UserProfile from './UserProfile';
+import TransactionHistory from './TransactionHistory';
+import TransactionData from './TransactionData';
+
 
 class NewerHomePage extends Component{
 
@@ -20,7 +23,9 @@ class NewerHomePage extends Component{
           <Route exact path = "/postproject" component={PostProject} />
           <Route exact path ="/completeProfile" component={CompleteProfile} />
           <Route exact path ="/projectDetails" component={ProjectDetails} />
-          <Route  path ="/user" component={UserProfile} />
+          <Route exact  path ="/profile" component={UserProfile} />
+          <Route exact path = "/transaction" component = {TransactionHistory}/>
+          <Route exact path = "/mytransaction" component = {TransactionData}/>
 
         </div>
 

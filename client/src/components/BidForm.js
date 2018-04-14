@@ -29,6 +29,8 @@ class BidForm extends Component{
        bid_days: "",
        hourlyRateError : false,
        hourlyRateErrorMsg :"",
+       bidPeriodError : false,
+       bidPeriodErrorMsg : "",
        user_id : localStorage.getItem("userid"),
        project_id : this.props.projectID
 
@@ -39,7 +41,17 @@ class BidForm extends Component{
   }
 
   handleSubmitBid(){
-    this.props.dispatch(this.props.saveBidOfUser(this.state));
+    if(this.state.bid_price ==='' || this.state.bid_days === ''){
+      if(this.state.bid_days === ''){
+           this.setState({bidPeriodError :true, bidPeriodErrorMsg: "Please enter a Bid period"});
+      }
+      if(this.state.bid_price === ''){
+         this.setState({hourlyRateError :true, hourlyRateErrorMsg: "Please enter Hourly rate"});
+      }
+    }else{
+        this.props.dispatch(this.props.saveBidOfUser(this.state));
+    }
+
 
   }
   handleBidPeriodChange(event){
@@ -49,7 +61,7 @@ class BidForm extends Component{
     }else{
         var emailPattern = /^[0-9]/;
         if(!emailPattern.test(elementValue)){
-           this.setState({bidPeriodError :true, bidPeriodErrorMsg: "Hourly rate must be in numbers"});
+           this.setState({bidPeriodError :true, bidPeriodErrorMsg: "Bid period must be in numbers"});
         }
         else{
           this.setState({bidPeriodError :false, bidPeriodErrorMsg:"",bid_days: elementValue}, function () {
@@ -57,8 +69,7 @@ class BidForm extends Component{
           });
         }
       }
-
-  }
+    }
 
   handleHourlyRateChange(event){
     let elementValue = event.target.value;
@@ -75,13 +86,12 @@ class BidForm extends Component{
           });
         }
       }
-
-  }
+    }
 
   render(){
     return(
         <div className = "bidform">
-        <div id="frm_place_bid" className="fl-form" novalidate="novalidate">
+        <div id="frm_place_bid" className="fl-form" >
                 <legend className="BidProposal-title">Bid Proposal</legend>
                 <input type="hidden" name="id" value="16491277"/>
                 <div id="error-messages" className="error hide message alert alert-error"></div>
@@ -95,6 +105,7 @@ class BidForm extends Component{
                                     <span className="input-group">
 
                                         <input className="form-control BidProposal-form-input earnedSum" name="sum" type="text" onBlur ={this.handleHourlyRateChange}/>
+                                        <div className={this.state.hourlyRateError ? 'text-input-error-wrapper':  'success' }>{this.state.hourlyRateErrorMsg }</div>
                                         <input className="form-control sum actualBidAmount" type="hidden" name="sum" value="22.22"/>
                                     </span>
                                     <span className="small help-inline"></span>
@@ -105,7 +116,8 @@ class BidForm extends Component{
                                 <div className="control-group">
                                     <span className="input-group">
                                         <input className="form-control BidProposal-form-input period" name="period" type="text"  onBlur ={this.handleBidPeriodChange}/>
-                                    </span>
+                                        <div className={this.state.bidPeriodError ? 'text-input-error-wrapper':  'success' }>{this.state.bidPeriodErrorMsg }</div>
+                                  </span>
                                     <span className="small help-inline"></span>
                                 </div>
                                 </div>

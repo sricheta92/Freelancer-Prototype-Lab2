@@ -78,10 +78,10 @@ render(){
                       <form role="form" method="POST" onSubmit = {this.handleSubmit} >
                             <input type="hidden" name="_token" value=""/>
                             <div className="form-group">
-                                <input  className="form-control large-input" id="username" ref = "useroremail" name="useroremail" type="text" placeholder="Email or Username"/>
+                                <input  className="form-control large-input" id="username" ref = "useroremail" name="useroremail" type="text" placeholder="Email or Username" required/>
                             </div>
                             <div className="form-group">
-                                <input  className="form-control large-input" id="password"  ref = "password" name="password" type="password" placeholder="Password"/>
+                                <input  className="form-control large-input" id="password"  ref = "password" name="password" type="password" placeholder="Password" required/>
                             </div>
 
                             <div className="form-group">

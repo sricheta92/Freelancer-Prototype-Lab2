@@ -32,8 +32,6 @@ class CompleteProfile extends Component{
           prevBtnOnLastStep={true}
           showSteps={true}
           stepsNavigation={true}
-          dontValidate={false}
-          hocValidationAppliedTo={[0]}
           backButtonCls ={ "btn btn-prev btn-primary btn-lg pull-left btn-back"}
           nextButtonCls={ "btn btn-prev btn-primary btn-lg pull-right btn-next"}
           backButtonText={"Add More Skills"}/>

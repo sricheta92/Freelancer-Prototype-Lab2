@@ -1,37 +1,68 @@
 import React, {Component} from 'react';
-import {Popover} from 'react-bootstrap';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import {showDashboard, hideDashboard} from '../actions';
+import {requestLogout,showDashboard, hideDashboard,getProfileDetails,getUserSkills,getTransactionUserDetails,requestAuth} from '../actions';
 
-// const mapStateToProps = (state) => {
-//   return {
-//     showDashboard: state.signupReducer.showDashboard,
-//   }
-// }
+const mapStateToProps = (state) => {
+   return {
+     bloburl: localStorage.getItem("bloburl") ? localStorage.getItem("bloburl") :  state.loginReducer.bloburl,
+     user : state.loginReducer.user,
+     isAuthentic : state.userReducer.isAuthentic
+   }
+ }
 
 const mapDispatchToProps = (dispatch)=>{
-  let actions = {showDashboard,hideDashboard};
+  let actions = {showDashboard,hideDashboard,getProfileDetails,getUserSkills,getTransactionUserDetails,requestLogout, requestAuth};
   return { ...actions, dispatch };
 }
 
 class FixedNav extends Component{
 
+  static defaultProps ={
+
+      bloburl :""
+  }
+
   constructor(props){
     super(props);
     this.state = {
-      showDashboard : false
+      showDashboard : false,
+      bloburl : this.props.bloburl
+
     }
     this.handleLogout = this.handleLogout.bind(this);
     this.goToDashBoard = this.goToDashBoard.bind(this);
     this.goToProjectFeed = this.goToProjectFeed.bind(this);
+    this.navigateToUserDetails = this.navigateToUserDetails.bind(this);
+    this.navigateToTransactionManager = this.navigateToTransactionManager.bind(this);
   }
 
+componentWillReceiveProps(nextProps){
+  this.setState({
+    bloburl :nextProps.bloburl
+  })
+}
   goToDashBoard(){
     this.setState({showDashboard : true}, function(){
       this.props.dispatch(this.props.showDashboard(this.state.showDashboard))
     });
+  }
+
+  componentWillMount(){
+    this.props.dispatch(this.props.requestAuth(this.state))
+    .then(() => !this.props.isAuthentic ? this.props.history.push('/home') : null);
+}
+
+  navigateToTransactionManager(){
+      this.props.dispatch(this.props.getTransactionUserDetails(this.props.user))
+      this.props.history.push("/mytransaction");
+  }
+
+  navigateToUserDetails(){
+    this.props.dispatch(this.props.getUserSkills( localStorage.getItem("userid")));
+    this.props.dispatch(this.props.getProfileDetails(this.props.user))
+    this.props.history.push("/profile");
   }
 
    goToProjectFeed(){
@@ -45,7 +76,10 @@ class FixedNav extends Component{
   	localStorage.removeItem('userid');
   	localStorage.removeItem('jwtToken');
   	localStorage.removeItem('username');
-  	this.props.history.push('/login');
+    localStorage.removeItem('bloburl');
+    localStorage.removeItem('role');
+    this.props.dispatch(this.props.requestLogout(this.props))
+  	.then(() => this.props.history.push('/login'));
   }
 
   render(){
@@ -66,14 +100,6 @@ class FixedNav extends Component{
     </a>
         <ul className="dropdown-menu">
 
-          <Popover
-              id="popover-basic"
-              placement="bottom"
-              title="Popover right">
-              <li><a href="#">Page 1-1</a></li>
-              <li><a href="#">Page 1-2</a></li>
-              <li><a href="#">Page 1-3</a></li>
-            </Popover>
 
         </ul>
 
@@ -90,11 +116,18 @@ class FixedNav extends Component{
 
     </ul>
       <ul className="nav navbar-nav navbar-right">
-        {/*<li><a href = "#"> <span className="fa fa-commenting-o comment-icon"></span></a></li>*/}
         <li><a href="#"><span className="  glyphicon glyphicon-bell"></span></a></li>
-         {/*<li><a href="#"><span className="glyphicon glyphicon-globe"></span></a></li>*/}
-       <li><a href="#"><span className="glyphicon glyphicon-user"></span></a></li>
-          <li><a><button type="button" class="btn btn-default btn-sm" onClick = {this.handleLogout}>
+
+<li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">  <img src = {this.state.bloburl} height="42"></img></a>
+          <ul class="dropdown-menu">
+                  <li><a className="cursor" onClick={this.navigateToUserDetails} >My Profile</a></li>
+                  <li><a className="cursor" onClick={this.navigateToTransactionManager} >Bid Funds</a></li>
+          </ul>
+      </li>
+
+
+
+        <li><a><button type="button" class="btn btn-default btn-sm" onClick = {this.handleLogout}>
         <span class="glyphicon glyphicon-log-out"></span> Log out
       </button></a></li>
 
@@ -135,4 +168,4 @@ class FixedNav extends Component{
 
 }
 
-export default withRouter(connect(mapDispatchToProps)(FixedNav));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(FixedNav));
