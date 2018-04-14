@@ -1,5 +1,5 @@
-var mongoURL = "mongodb://localhost:27017/freelancer";
-//var mongoURL = "mongodb://admin:admin@ds143099.mlab.com:43099/freelancersri"
+//var mongoURL = "mongodb://localhost:27017/freelancer";
+var mongoURL = "mongodb://admin:admin@ds143099.mlab.com:43099/freelancersri"
 var ObjectID = require('mongodb').ObjectID;
 var mongo = require("./mongo");
 var auth = require('passport-local-authenticate');
