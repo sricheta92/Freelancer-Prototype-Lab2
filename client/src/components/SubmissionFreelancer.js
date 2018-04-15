@@ -22,7 +22,9 @@ class SubmissionFreelancer extends Component{
   constructor(props){
     super(props);
     this.state ={
-      comment : ''
+      comment : '',
+      commentError : false,
+      commentErrorMsg :''
     }
     this.handleFileUpload = this.handleFileUpload.bind(this);
     this.doSubmission = this.doSubmission.bind(this);
@@ -36,14 +38,23 @@ class SubmissionFreelancer extends Component{
   }
 
   doSubmission(){
+
+    if(this.state.comment === ''){
+
+            this.setState({commentError :true, commentErrorMsg: "Please write few line on how you solved the problem"});
+
+
+    } else{
+
     let data = {
-      project_id : this.props.project.project_id,
-      submission :{
-        comment : this.state.comment,
-        file : this.props.uploadname
+        project_id : this.props.project.project_id,
+        submission :{
+          comment : this.state.comment,
+          file : this.props.uploadname
+        }
       }
+      this.props.dispatch(this.props.submitProjectSolution(data));
     }
-    this.props.dispatch(this.props.submitProjectSolution(data));
   }
 
   handleCommentChange(event){
@@ -70,7 +81,8 @@ class SubmissionFreelancer extends Component{
           <div class="form-group">
             <label for="submission">Solution Comments</label>
             <textarea class="form-control" id="submission" rows="3"  onBlur = {this.handleCommentChange} required>{this.props.project.submission.comment}</textarea>
-          </div>
+            <div className={this.state.commentError ? 'text-input-error-wrapper':  'success' }>{this.state.commentErrorMsg }</div>
+        </div>
           <div class="form-group">
            <label for="submissionFile">Upload your solution</label>
            <input type="file" class="form-control-file" id="submissionFile" onChange={this.handleFileUpload}/>

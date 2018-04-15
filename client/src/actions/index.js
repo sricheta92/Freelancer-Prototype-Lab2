@@ -2,6 +2,8 @@ import * as actionType from './ActionType';
 import fileDownload from 'react-file-download';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
+//var serverURL = "http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com"
+var serverURL = "http://localhost:5000"
 
 export function checkEmail(state) {
 
@@ -9,7 +11,7 @@ export function checkEmail(state) {
 		let temp = {
 			"email": state.email
 		};
-		return axios.post("http://localhost:5000/signup/checkEmail", temp).
+		return axios.post(serverURL+"/signup/checkEmail", temp).
     then((response) => {
 			if( response.data){
 				dispatch({type:actionType.EMAIL_VALID, payload: response.data})
@@ -31,7 +33,7 @@ export function signup(state) {
       "role" :state.role
 
     };
-    return axios.post("http://localhost:5000/signup", temp).then((response) => {
+    return axios.post(serverURL+"/signup", temp).then((response) => {
       if( response.data){
         dispatch({type:actionType.SIGNUP_SUCCESS, payload: response.data})
       }
@@ -49,7 +51,7 @@ export function checkUser(state) {
     let temp = {
       "username": state.username
     };
-    return axios.post("http://localhost:5000/signup/checkUser", temp).then((response) => {
+    return axios.post(serverURL+"/signup/checkUser", temp).then((response) => {
       if( response.data){
         dispatch({type:actionType.USERNAME_VALID, payload: response.data})
       }
@@ -68,7 +70,7 @@ export function login(state){
         "password": state.password
       }
 
-      return axios.post("http://localhost:5000/login", temp).then((response) => {
+      return axios.post(serverURL+"/login", temp).then((response) => {
         if( response.data.token){
           localStorage.setItem('jwtToken', response.data.token);
   				localStorage.setItem('userid', response.data.userid);
@@ -93,7 +95,7 @@ export function login(state){
 
 export function getAllSkills(state){
   return function(dispatch){
-   return axios.get("http://localhost:5000/skill/allSkills").then((response) => {
+   return axios.get(serverURL+"/skill/allSkills").then((response) => {
       if( response.data){
         dispatch({type:actionType.GET_SKILLS_SUCCESS, payload: response.data})
       }
@@ -110,7 +112,7 @@ export function getAllSkills(state){
 
 export function getAllCategories(state){
     return function(dispatch){
-      return axios.get("http://localhost:5000/skill/allCategories").then((response) => {
+      return axios.get(serverURL+"/skill/allCategories").then((response) => {
           if( response.data){
             dispatch({type:actionType.GET_CATEGORY_SUCCESS, payload: response.data})
           }
@@ -124,7 +126,7 @@ export function getAllCategories(state){
 export function getAllSkillsByCategory(state){
   return function(dispatch){
 
-    return axios.get("http://localhost:5000/skill/skillsByCategory" ).then((response) => {
+    return axios.get(serverURL+"/skill/skillsByCategory" ).then((response) => {
       if( response.data){
         dispatch({type:actionType.GET_SKILLS_BY_CATEGORY_SUCCESS, payload: response.data})
       }
@@ -150,7 +152,7 @@ export function completeProfile(state){
         "headline" :state.headline
       };
 
-    return axios.post("http://localhost:5000/signup/withDetails",temp).then((response) => {
+    return axios.post(serverURL+"/signup/withDetails",temp).then((response) => {
        if( response.data){
          dispatch({type:actionType.COMPLETE_PROFILE_SUCCESS, payload: response.data})
        }
@@ -168,7 +170,7 @@ export function mapSkillToUser(state){
         "userID" :state.userID,
         "skills" : state.skills
     };
-    return axios.post("http://localhost:5000/skill/withDetails",temp).then((response) => {
+    return axios.post(serverURL+"/skill/withDetails",temp).then((response) => {
        if( response.data){
          dispatch({type:actionType.COMPLETE_PROFILE_SKILL_SUCCESS, payload: response.data})
        }
@@ -199,7 +201,7 @@ export function handleFileUpload(state,file){
 
     var data = new FormData();
   	data.append("file", file);
-    return axios.post("http://localhost:5000/project/uploadFiles", data).then((response) => {
+    return axios.post(serverURL+"/project/uploadFiles", data).then((response) => {
        if( response.data){
          dispatch({type:actionType.FILE_UPLOAD_SUCCESS, payload: response.data})
        }
@@ -220,7 +222,7 @@ export function postProject(state){
       project_pay_type :state.selectedOption
     }
 
-    return axios.post("http://localhost:5000/project/postprojects", data).then((response) => {
+    return axios.post(serverURL+"/project/postprojects", data).then((response) => {
        if( response.data){
          dispatch({type:actionType.POST_PROJECT_SUCCESS, payload: response.data})
        }
@@ -237,7 +239,7 @@ export function mapfilesToProject(props){
       projectid : props.projectid,
       filepath :props.uploadname
     }
-    return axios.post("http://localhost:5000/project/mapFilesToProject", data).then((response) => {
+    return axios.post(serverURL+"/project/mapFilesToProject", data).then((response) => {
        if( response.data){
          dispatch({type:actionType.MAP_FILES_TO_PROJECT_SUCCESS, payload: response.data})
        }
@@ -253,7 +255,7 @@ export function mapSkillToProject(props,state){
       projectid : props.projectid,
       skills : state.selectedSkills
     }
-    return axios.post("http://localhost:5000/project/mapSkillToProject", data).then((response) => {
+    return axios.post(serverURL+"/project/mapSkillToProject", data).then((response) => {
        if( response.data){
          dispatch({type:actionType.MAP_SKILLS_TO_PROJECT_SUCCESS, payload: response.data})
        }
@@ -270,7 +272,7 @@ export function mapProjectToUser(state,props){
         userid :props.userID,
         role : state.role
       }
-      return axios.post("http://localhost:5000/project/mapProjectToUser", data).then((response) => {
+      return axios.post(serverURL+"/project/mapProjectToUser", data).then((response) => {
          if( response.data){
            dispatch({type:actionType.MAP_PROJECT_TO_USER_SUCCESS, payload: response.data})
          }
@@ -282,7 +284,7 @@ export function mapProjectToUser(state,props){
 
 export function getRecommendedProjects(props){
   return function(dispatch){
-    return axios.get("http://localhost:5000/project/mapRecommendedProjects/"+ props.userID,{withCredentials: true} ).then((response) => {
+    return axios.get(serverURL+"/project/mapRecommendedProjects/"+ props.userID,{withCredentials: true} ).then((response) => {
        if( response.data){
 
 
@@ -338,7 +340,7 @@ export function saveBidOfUser(state){
       "bid_days" :state.bid_days,
       "bid_price" :state.bid_price
 		};
-    return axios.post("http://localhost:5000/project/bidproject",temp).then((response) => {
+    return axios.post(serverURL+"/project/bidproject",temp).then((response) => {
        if( response.data){
          dispatch({type:actionType.PROJECT_BID_SUCCESS, payload: response.data})
        }
@@ -365,7 +367,7 @@ export function hideDashboard(data){
 
 export function getAllBiddedProject(data){
   return function(dispatch){
-    return axios.get("http://localhost:5000/user/biddedprojects/"+data).then((response) => {
+    return axios.get(serverURL+"/user/biddedprojects/"+data).then((response) => {
        if( response.data){
 
 
@@ -404,7 +406,7 @@ export function getDashboardSwitchStatus(data){
 
 export function getAllPostedProjectsbyMe(data){
   return function(dispatch){
-    return axios.get("http://localhost:5000/user/postedprojects/"+data).then((response) => {
+    return axios.get(serverURL+"/user/postedprojects/"+data).then((response) => {
        if( response.data){
 
 
@@ -439,7 +441,7 @@ export function getAllPostedProjectsbyMe(data){
 
 export function getUserDetails(data){
   return function(dispatch){
-    return axios.get("http://localhost:5000/user/detail/"+data).then((response) => {
+    return axios.get(serverURL+"/user/detail/"+data).then((response) => {
        if( response.data){
          dispatch({type:actionType.GET_USER_DETAIL_SUCCESS, payload: response.data})
        }
@@ -450,7 +452,7 @@ export function getUserDetails(data){
 }
 export function handleDownload(original,file){
   return function(dispatch){
-		return axios.get("http://localhost:5000/user/downloadFile?filepath="+file).then((response) => {
+		return axios.get(serverURL+"/user/downloadFile?filepath="+file).then((response) => {
     //  response = response.text();
 			 fileDownload(response.data, original);
 
@@ -463,7 +465,7 @@ export function handleDownload(original,file){
 }
 export function downloadFile(fileName){
 	return function(dispatch){
-		return axios.get("http://localhost:5000/user/downloadFile?profilePicPath="+fileName, { responseType: 'arraybuffer' }).then((response) => {
+		return axios.get(serverURL+"/user/downloadFile?profilePicPath="+fileName, { responseType: 'arraybuffer' }).then((response) => {
 			// fileDownload(response.data, "profilepic.jpg");
 
        var arrayBufferView = new Uint8Array( response.data );
@@ -496,7 +498,7 @@ export function getUserSkills(data){
 
   return function(dispatch){
     let temp = data;
-    return axios.get("http://localhost:5000/user/skills/"+temp).then((response) => {
+    return axios.get(serverURL+"/user/skills/"+temp).then((response) => {
        if( response.data){
          dispatch({type:actionType.GET_USER_SKILL_SUCCESS, payload: response.data})
        }
@@ -515,7 +517,7 @@ export function updateProfile(state, id){
       "headline" :state.userdetails.prof_headline,
       "profilePic" : state.userdetails.profilePic
 		};
-    return axios.post("http://localhost:5000/user/update",data).then((response) => {
+    return axios.post(serverURL+"/user/update",data).then((response) => {
        if( response.data){
          var arrayBufferView = new Uint8Array(response.data.user.encodeImage.data );
          var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
@@ -543,7 +545,7 @@ export function hireUser(user){
         file : ""
       }
 		};
-    return axios.post("http://localhost:5000/user/hire",data).then((response) => {
+    return axios.post(serverURL+"/user/hire",data).then((response) => {
        if( response.data){
          dispatch({type:actionType.HIRE_USER_SUCCESS, payload: response.data})
        }
@@ -555,7 +557,7 @@ export function hireUser(user){
 
 export function submitProjectSolution(data){
   return function(dispatch){
-    return axios.post("http://localhost:5000/project/submitsolution",data).then((response) => {
+    return axios.post(serverURL+"/project/submitsolution",data).then((response) => {
        if( response.data){
          dispatch({type:actionType.SUBMIT_PROJECT_SOLUTION_SUCCESS, payload: response.data})
        }
@@ -567,7 +569,7 @@ export function submitProjectSolution(data){
 
 export function manageTransaction(data){
   return function(dispatch){
-    return axios.post("http://localhost:5000/user/manageTransaction",data).then((response) => {
+    return axios.post(serverURL+"/user/manageTransaction",data).then((response) => {
        if( response.data){
          dispatch({type:actionType.TRANSACTION_SUCCESSFUL, payload: response.data})
        }
@@ -588,7 +590,7 @@ export function requestAuth(state){
 	return function (dispatch) {
 		let temp = {
 		};
-		return axios.post("http://localhost:5000/user/auth", temp).then((response) => {
+		return axios.post(serverURL+"/user/auth", temp).then((response) => {
 			dispatch({type:"authSuccess", payload: response.data})
 		}).catch((err) => {
 			 dispatch({type:"authFailed", payload: err.response.data})
@@ -599,7 +601,7 @@ export function requestAuth(state){
 
 export function requestLogout(state){
 	return function (dispatch) {
-		return axios.get("http://localhost:5000/user/logout").then((response) => {
+		return axios.get(serverURL+"/user/logout").then((response) => {
 			dispatch({type:"logoutSuccess", payload: response.data})
 		}).catch((err) => {
 			 dispatch({type:"logoutFailed", payload: err.response.data})
@@ -610,7 +612,7 @@ export function requestLogout(state){
 
 export function getAllProjects(props){
   return function(dispatch){
-    return axios.get("http://localhost:5000/project/getAllprojects/"+ props.userID,{withCredentials: true} ).then((response) => {
+    return axios.get(serverURL+"/project/getAllprojects/"+ props.userID,{withCredentials: true} ).then((response) => {
        if( response.data){
 
 

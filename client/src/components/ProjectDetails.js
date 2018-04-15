@@ -128,7 +128,7 @@ render(){
               </Modal>
 
         : null}
-      {this.props.solutionSubmitStatus ?
+      {localStorage.getItem("userid") === this.props.project.project.hiredFreelancer.userid && this.props.solutionSubmitStatus ?
       <div id="proposal-panel" class="center-block"><div class="alert alert-success alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a><strong>{this.props.solutionSubmitMessage}</strong></div></div> :null}
       <div className = "gaf-container" >
       <div id="projectHeader">
@@ -188,7 +188,7 @@ render(){
           {localStorage.getItem("userid") === this.props.project.project.hiredFreelancer.userid  ? <SubmissionFreelancer  project = {this.props.project.project}/>
         : <div>{localStorage.getItem("userid") === this.props.project.postedBy._id ? <SubmissionEmployer triggerAddFormComponent={this.makePayment} project = {this.props.project.project}/> :
         <div class="alert alert-danger center-block">
-          <strong>Hiring Closed!!!</strong> 
+          <strong>Hiring Closed!!!</strong>
         </div>
       }</div>}
         </div>

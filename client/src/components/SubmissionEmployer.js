@@ -21,33 +21,36 @@ class SubmissionEmployer extends Component{
   constructor(props){
     super(props);
     let filename = this.props.project.submission.file;
-    var res1 = filename.split(".");
-    var res = filename.split(".",2);
-    let originalname = res[1]+"."+res1[2] ;
+      var originalname = undefined;
+    if(filename!== undefined){
+      var res1 = filename.split(".");
+      var res = filename.split(".",2);
+      originalname = res[1]+"."+res1[2] ;
+    }
     this.state ={
       originalname : originalname,
       addMoneyComponenet :false
     }
-    this.makePayment = this.makePayment.bind(this);
+  //  this.makePayment = this.makePayment.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
   }
 
-  makePayment(){
-
-   let data = {
-    project : this.props.project,
-    postedby : localStorage.getItem("userid")
-  }
-  if(this.props.project.hiredFreelancer.wallet === undefined){
-      this.setState({
-        addMoneyComponenet : true
-      })
-  }else{
-      this.props.dispatch(this.props.manageTransaction(data));
-      this.props.dispatch(this.props.getProjectDetails(this.props.project))
-      this.props.history.push("/transaction");
-    }
-  }
+  // makePayment(){
+  //
+  //  let data = {
+  //   project : this.props.project,
+  //   postedby : localStorage.getItem("userid")
+  // }
+  // if(this.props.project.hiredFreelancer.wallet === undefined){
+  //     this.setState({
+  //       addMoneyComponenet : true
+  //     })
+  // }else{
+  //     this.props.dispatch(this.props.manageTransaction(data));
+  //     this.props.dispatch(this.props.getProjectDetails(this.props.project))
+  //     this.props.history.push("/transaction");
+  //   }
+  // }
 
   handleDownload(){
     this.props.dispatch(this.props.handleDownload(this.state.originalname,this.props.project.submission.file));
