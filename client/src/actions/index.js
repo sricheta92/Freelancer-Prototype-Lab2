@@ -2,8 +2,8 @@ import * as actionType from './ActionType';
 import fileDownload from 'react-file-download';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-//var serverURL = "http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com"
-var serverURL = "http://localhost:5000"
+var serverURL = "http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com"
+//var serverURL = "http://localhost:5000"
 
 export function checkEmail(state) {
 
