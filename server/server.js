@@ -28,8 +28,8 @@ app.use(cors(corsOptions))
 app.use(cookieParser('CMPE273_passport'));
 
 
-var mongoSessionURL = "mongodb://localhost:27017/freelancer";
-//var mongoSessionURL = "mongodb://admin:admin@ds143099.mlab.com:43099/freelancersri";
+//var mongoSessionURL = "mongodb://localhost:27017/freelancer";
+var mongoSessionURL = "mongodb://admin:admin@ds143099.mlab.com:43099/freelancersri";
 app.use(expressSessions({
   secret: "CMPE273_passport",
   resave: false,
