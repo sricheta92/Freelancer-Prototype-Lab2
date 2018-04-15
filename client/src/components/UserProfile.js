@@ -4,11 +4,11 @@ import {withRouter} from "react-router-dom";
 import FixedNav from './FixedNav';
 import {Typeahead} from 'react-bootstrap-typeahead';
 import DashboardDecider from './DashboardDecider';
-import { getAllSkills ,downloadFile,handleFileUpload,updateProfile,getProfileDetails,getProfileDetailsonLogin} from '../actions';
+import { getAllSkills ,downloadFile,handleFileUpload,updateProfile,getProfileDetails,getProfileDetailsonLogin,getUserDetails} from '../actions';
 
 
 const mapDispatchToProps = (dispatch)=>{
-    let actions = {getAllSkills,downloadFile,handleFileUpload,updateProfile,getProfileDetails,getProfileDetailsonLogin};
+    let actions = {getAllSkills,downloadFile,handleFileUpload,updateProfile,getProfileDetails,getProfileDetailsonLogin,getUserDetails};
     return { ...actions, dispatch };
 }
 
@@ -128,6 +128,7 @@ class UserProfile extends Component {
           });
          this.props.dispatch(this.props.getProfileDetails(this.state.userdetails));
          this.props.dispatch(this.props.getProfileDetailsonLogin(this.state.userdetails));
+        this.props.dispatch(this.props.getUserDetails(localStorage.getItem("userid")));
       // });
     }
 
@@ -161,7 +162,9 @@ class UserProfile extends Component {
 
     componentWillMount(){
       console.log("componentWillMount");
-    //  this.props.dispatch(this.props.getUserDetails());
+      if(localStorage.getItem("userid") === this.props.user._id  || localStorage.getItem("userid") === this.props.user.userid){
+      this.props.dispatch(this.props.getUserDetails(localStorage.getItem("userid")));
+    }
 
     }
 
@@ -242,17 +245,6 @@ class UserProfile extends Component {
                                  </div>
                                </div>
 
-                       {/*{!this.state.disabletags.disableTags ?
-                         <div className = "skillEdit">
-                         <Typeahead
-                           clearButton
-                           labelKey={(option) => `${option.skill_name}`}
-                           multiple
-                           selected ={this.props.userSkill}
-                           options={this.props.allSkills}
-                           placeholder="What Skills are required? "
-                           onChange={this.handleOptionSelected}
-                         /> </div>: null }*/}
                           {!this.state.disabletags.disableTags ?   <div className = "center-block form-group row" ><label for="phone" class="col-md-offset-3 col-sm-2 col-form-label">Change Profile Pic</label><div class="col-sm-2"> <input  className ="form-control" type="file" onChange={this.handleFile} accept=".jpg,.jpeg,.PNG"/></div></div> : null }
                           { this.state.disabletags.updatebutton ? <button className="btn btn-primary" onClick={this.updateuserProfile}>Update</button> : null }
 

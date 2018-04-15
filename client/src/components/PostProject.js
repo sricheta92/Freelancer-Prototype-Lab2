@@ -194,7 +194,7 @@ constructor(props){
 
           </div>
           <div className ="row">
-            {this.props.originalname ?<aside className="alert alert-info alert-file" role="alert"><strong>{this.props.originalname}</strong></aside> :null}
+            {this.props.originalname ? <aside className="alert alert-info alert-file" role="alert"><strong>{this.props.originalname}</strong></aside> :null}
           </div>
           <div className = "row gap">
             <h4><strong>What skills are required?</strong></h4>

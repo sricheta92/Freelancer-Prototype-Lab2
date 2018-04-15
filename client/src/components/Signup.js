@@ -66,20 +66,21 @@ componentWillReceiveProps(nextProps){
 
   handleSubmit(e){
     e.preventDefault();
-    var role1;
+    if(this.state.uiemailValid && this.state.validuser && this.state.validPassword ){
+      var role1;
 
-      if(this.refs.looking_for_hire.checked){
-        role1 = this.refs.looking_for_hire.value;
-      }else{
-        role1 = this.refs.looking_for_work.value;
-      }
+        if(this.refs.looking_for_hire.checked){
+          role1 = this.refs.looking_for_hire.value;
+        }else{
+          role1 = this.refs.looking_for_work.value;
+        }
 
-    this.setState({
-      role : role1
-   },function(){
-        this.props.dispatch(signup(this.state));
-    })
-
+      this.setState({
+        role : role1
+     },function(){
+          this.props.dispatch(signup(this.state));
+      })
+    }
   }
 
   handleEmailChange(event){
@@ -128,7 +129,7 @@ componentWillReceiveProps(nextProps){
 
         var emailPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
         if(!emailPattern.test(elementValue)){
-           this.setState({validPassword :false, passwordError: "Please provide a stronger password"});
+           this.setState({validPassword :false, passwordError: "Please provide a stronger password which inludes uppercase,numbers and alphanumeric character"});
         }else{
         this.setState({validPassword :true, passwordError:"",password: elementValue}, function () {
               console.log("");

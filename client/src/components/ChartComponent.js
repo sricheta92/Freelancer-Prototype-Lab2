@@ -26,7 +26,7 @@ class ChartComponent extends Component{
               value: this.props.lost,
               color:"#F7464A",
               highlight: "#FF5A5E",
-              label: "Incoming Funds"
+              label: "Outgoing Funds"
           }
       ];
       return <Pie data={pieData} options={options}/>;

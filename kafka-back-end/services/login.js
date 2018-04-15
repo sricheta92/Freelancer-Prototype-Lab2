@@ -323,7 +323,7 @@ function handle_request(msg,callback){
            });
 
   Promise.all(arrtemp).then(() =>
-           db.collection("project").find({_id:{$in:arrtemp}}).toArray(function(err,res1){
+           db.collection("project").find({_id:{$in:arrtemp}, status:'OPEN'}).toArray(function(err,res1){
             res1.map((row,index) => {
 
                 var arr1 = [];
@@ -468,10 +468,10 @@ function handle_request(msg,callback){
   }
   if(msg.key == "projectsPostedByMe"){
     var arr = [];
-    var arr1 = [];
-    var userBidded= [];
-    var mybid ={};
-    var doc;
+//    var arr1 = [];
+  //  var userBidded= [];
+//    var mybid ={};
+//    var doc;
     var arrtemp = [];
     var userid = msg.value.userid;
     mongo.connect(mongoURL, function(db) {
@@ -503,6 +503,10 @@ function handle_request(msg,callback){
         db.collection("project").find({_id:{$in:arrtemp}}).toArray(function(err,response1){
 
         response1.map((row,index) => {
+          var arr1 = [];
+          var doc;
+          var mybid ={};
+          var userBidded= [];
           db.collection('project_skill').aggregate([
             { $match : { project_id :  row._id.toHexString()}},
             {$lookup:{
@@ -512,7 +516,7 @@ function handle_request(msg,callback){
                 as: 'project_skill'
               }}
           ]).toArray(function(err,res1){
-              if(res1!= undefined && res1.length >0){
+              if(res1!== undefined && res1.length >0){
                 res1.map((row1) => {
                   arr1.push({id : row1.skill_id, name: row1.project_skill[0].skill_name});
                 });
@@ -529,7 +533,7 @@ function handle_request(msg,callback){
                 as: 'orderdetails2'
               }}
           ]).toArray(function(err,res2){
-             if(res2!= undefined && res2.length >0){
+             if(res2!== undefined && res2.length >0){
               res2.map((rows2) => {
                   doc = rows2.document_path;
               });
@@ -546,25 +550,24 @@ function handle_request(msg,callback){
               }},
               {$unwind : "$userbidproject"}
           ]).toArray(function(err,res4){
-              if(res4!= undefined && res4.length >0){
-              //  userBidded = res4;
+              if(res4!== undefined && res4.length >0){
                 res4.map(function(res4row,index){
-                  userBidded[index] = {};
-                  userBidded[index].project_id = res4row.project_id;
-                  userBidded[index].userid = res4row.userid;
-                  userBidded[index].bid_price = res4row.bid_price;
-                  userBidded[index].bid_days = res4row.bid_days;
-                  userBidded[index].create_ts = res4row.create_ts;
-                  userBidded[index].username = res4row.userbidproject.username;
-                  userBidded[index].email = res4row.userbidproject.email;
-                  userBidded[index].primary_role = res4row.userbidproject.primary_role;
-                  userBidded[index].bio = res4row.userbidproject.bio;
-                  userBidded[index].city = res4row.userbidproject.city;
-                  userBidded[index].firstname = res4row.userbidproject.firstname;
-                  userBidded[index].lastname = res4row.userbidproject.lastname;
-                  userBidded[index].phone = res4row.userbidproject.phone;
-                  userBidded[index].prof_headline = res4row.userbidproject.prof_headline;
-                  userBidded[index].profilePicPath = res4row.userbidproject.profilePicPath;
+                    userBidded[index] = {};
+                    userBidded[index].project_id = res4row.project_id;
+                    userBidded[index].userid = res4row.userid;
+                    userBidded[index].bid_price = res4row.bid_price;
+                    userBidded[index].bid_days = res4row.bid_days;
+                    userBidded[index].create_ts = res4row.create_ts;
+                    userBidded[index].username = res4row.userbidproject.username;
+                    userBidded[index].email = res4row.userbidproject.email;
+                    userBidded[index].primary_role = res4row.userbidproject.primary_role;
+                    userBidded[index].bio = res4row.userbidproject.bio;
+                    userBidded[index].city = res4row.userbidproject.city;
+                    userBidded[index].firstname = res4row.userbidproject.firstname;
+                    userBidded[index].lastname = res4row.userbidproject.lastname;
+                    userBidded[index].phone = res4row.userbidproject.phone;
+                    userBidded[index].prof_headline = res4row.userbidproject.prof_headline;
+                    userBidded[index].profilePicPath = res4row.userbidproject.profilePicPath;
                 });
               }
           });
@@ -601,6 +604,9 @@ function handle_request(msg,callback){
                 ]).toArray(function(err,res6){
                     if(res6 != undefined && res6.length >0){
                         row.project_id = row._id;
+                      //  row._id = row.user_id;
+                      res6[0]._id =  res6[0].user_id;
+                  //    Promise.all(userBidded,mybid).then(() =>{
                         arr.push({project: row, skills : arr1, postedBy : res6[0], file : doc ,usersBidded : userBidded,mybid : mybid});
                         if(index == response.length-1){
                              if(err){
@@ -615,6 +621,8 @@ function handle_request(msg,callback){
                                callback(null, res);
                              }
                         }
+                      //}
+                      //);
                     }
 
 
@@ -637,10 +645,10 @@ function handle_request(msg,callback){
 if(msg.key == "projectsBiddedByMe"){
 
   var arr = [];
-  var arr1 = [];
-  var userBidded= [];
-  var mybid ={};
-  var doc;
+//  var arr1 = [];
+//  var userBidded= [];
+//  var mybid ={};
+//  var doc;
   var arrtemp = [];
   var userid = msg.value.userid;
   mongo.connect(mongoURL, function(db) {
@@ -666,25 +674,29 @@ if(msg.key == "projectsBiddedByMe"){
          arrtemp[index]= new ObjectID(res1.project_id);
          index++;
        });
+
     Promise.all(arrtemp).then(() =>
       db.collection("project").find({_id:{$in:arrtemp}}).toArray(function(err,response1){
-
-      response1.map((row,index) => {
-        db.collection('project_skill').aggregate([
-          { $match : { project_id :  row._id.toHexString()}},
-          {$lookup:{
-              from: 'skill',
-              localField: 'skill_id',
-              foreignField: 'skill_id',
-              as: 'project_skill'
-            }}
-        ]).toArray(function(err,res1){
-            if(res1!= undefined && res1.length >0){
-              res1.map((row1) => {
-                arr1.push({id : row1.skill_id, name: row1.project_skill[0].skill_name});
-              });
-            }
-        });
+        response1.map((row,index) => {
+          var arr1 = [];
+          var doc;
+          var mybid ={};
+          var userBidded= [];
+          db.collection('project_skill').aggregate([
+            { $match : { project_id :  row._id.toHexString()}},
+            {$lookup:{
+                from: 'skill',
+                localField: 'skill_id',
+                foreignField: 'skill_id',
+                as: 'project_skill'
+              }}
+          ]).toArray(function(err,res1){
+              if(res1!= undefined && res1.length >0){
+                res1.map((row1) => {
+                  arr1.push({id : row1.skill_id, name: row1.project_skill[0].skill_name});
+                });
+              }
+          });
 
         // FILES
         db.collection('project_document').aggregate([
@@ -714,7 +726,6 @@ if(msg.key == "projectsBiddedByMe"){
             {$unwind : "$userbidproject"}
         ]).toArray(function(err,res4){
             if(res4!= undefined && res4.length >0){
-            //  userBidded = res4;
               res4.map(function(res4row,index){
                 userBidded[index] = {};
                 userBidded[index].project_id = res4row.project_id;
@@ -752,9 +763,9 @@ if(msg.key == "projectsBiddedByMe"){
         ]).toArray(function(err,res5){
           if(res5!= undefined && res5.length >0){
               mybid = res5[0];
-
-
-              // POSTED BY
+            }
+        });
+        // POSTED BY
               db.collection('project_user').aggregate([
                 { $match : { Role : 'Employer', project_id :   row._id.toHexString() }},
                 {$lookup:{
@@ -765,8 +776,9 @@ if(msg.key == "projectsBiddedByMe"){
                 }},
                 {$unwind : "$project_user"}
               ]).toArray(function(err,res6){
-                  if(res6 != undefined && res6.length >0){
+                  if(res6 !== undefined && res6.length >0){
                       row.project_id = row._id;
+                      res6[0]._id =  res6[0].user_id;
                       arr.push({project: row, skills : arr1, postedBy : res6[0], file : doc ,usersBidded : userBidded,mybid : mybid});
                   //    arr.push({project: row, skills : arr1, postedBy : res6[0].project_user, file : doc ,usersBidded : userBidded});
                       if(index == response.length-1){
@@ -785,13 +797,13 @@ if(msg.key == "projectsBiddedByMe"){
                   }
                 });
 
-            }
-        });
-
 
         });
+
 
       }));
+
+    ///  }));
       if(response == undefined || response.length ==0){
         res.code = "500";
         data =  {projectsBiddedByMe:[]}
@@ -954,7 +966,7 @@ if(msg.key == "getAllprojects"){
   var arr = [];
 
    mongo.connect(mongoURL, function(db) {
-     db.collection('project').find({}).toArray(function(err, response) {
+     db.collection('project').find({status:'OPEN'}).toArray(function(err, response) {
 
           response.forEach(function(res1,index){
              arrtemp[index]=res1._id;
@@ -1075,6 +1087,24 @@ if(msg.key == "getAllprojects"){
      });
 
    });
+}
+
+if(msg.key == "getUser"){
+  mongo.connect(mongoURL, function(db) {
+    db.collection("user").findOne({ _id: new ObjectID(msg.value.userid) },function (err, rows1){
+    if (err) {
+          res.code = "500";
+          data =  {success: false,message :"Get User internal error" };
+          res.value = data;
+          callback(null, res);
+      }else{
+          res.code = "200";
+          data =  {success: true,message :"User fetched successfully" , user : rows1};
+          res.value = data;
+          callback(null, res);
+    }
+  });
+  });
 }
 
 }

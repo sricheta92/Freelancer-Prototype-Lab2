@@ -23,9 +23,9 @@ var nodemailer = require('nodemailer');
 
           var mailOptions = {
               from: 'srichetaruj@gmail.com',
-              to:'sricheta.ruj@sjsu.edu',
-              subject: 'Regarding your open issue',
-              text: 'Hello'
+              to: req.body.hiredFreelancer.email,
+              subject: 'Congrats! You are hired :-) ',
+              text: 'you are hired to the project'
 
           };
 
@@ -63,25 +63,51 @@ var nodemailer = require('nodemailer');
        });
     });
   router.get('/detail/:userid', (req,res) =>{
-      var arr = []
-      console.log("hello" +req);
-      pool.getConnection(function(err, connection){
-        connection.query("select * from user  where  userid= "+  req.params.userid + ";", function(err, rows){
-            if(rows != undefined && rows.length >0){
-              console.log(rows);
-              connection.query("select * from skill s join skill_user su on s.skill_id = su.skillid where su.userid ="+  req.params.userid + ";", function(err, rows1){
-                if(rows1 != undefined && rows1.length>0){
-                  res.status(200).send({success: true, user : rows, skill : rows1});
-                }else{
-                    res.status(200).send({success: true, user : rows, skill : []});
-                }
-              });
-            }else{
-              throw err;
-              res.status(500).send({success: false, message : "user not found"});
-            }
-          });
-      });
+        kafka.make_request('requestTopic', "getUser", {"userid":req.params.userid}, function(err,results){
+          if(err){
+           done(err,{});
+           }
+           else{
+             if(results.code == 200){
+               console.log("USER"+ JSON.stringify(results.value));
+               if(results.value.user.profilePicPath!== null){
+              // console.log(obj);
+                 var buffer = fs.readFileSync("./uploads/"+results.value.user.profilePicPath);
+                 var bufferBase64 = new Buffer(buffer);
+                 results.value.user.encodeImage = bufferBase64;
+               }else{
+              //   console.log(obj);
+                 var buffer = fs.readFileSync("./uploads/default/noimg.PNG");
+                 var bufferBase64 = new Buffer(buffer);
+                 results.value.user.encodeImage = bufferBase64;
+               }
+
+                return res.status(200).json(results.value);;
+              }else{
+                return res.status(500).json(results.value);;
+              }
+           }
+
+        });
+      // var arr = []
+      // console.log("hello" +req);
+      // pool.getConnection(function(err, connection){
+      //   connection.query("select * from user  where  userid= "+  req.params.userid + ";", function(err, rows){
+      //       if(rows != undefined && rows.length >0){
+      //         console.log(rows);
+      //         connection.query("select * from skill s join skill_user su on s.skill_id = su.skillid where su.userid ="+  req.params.userid + ";", function(err, rows1){
+      //           if(rows1 != undefined && rows1.length>0){
+      //             res.status(200).send({success: true, user : rows, skill : rows1});
+      //           }else{
+      //               res.status(200).send({success: true, user : rows, skill : []});
+      //           }
+      //         });
+      //       }else{
+      //         throw err;
+      //         res.status(500).send({success: false, message : "user not found"});
+      //       }
+      //     });
+      // });
   });
 
   router.get('/biddedprojects/:userid', (req, res) => {

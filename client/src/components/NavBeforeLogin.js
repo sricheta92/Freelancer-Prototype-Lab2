@@ -28,96 +28,58 @@ class NavbarAfterLogin extends Component{
 
   constructor(props){
     super(props);
-    this.state = {
-      test :'',
-      display : '',
-      allProjects : true,
-      skillRelated : false,
-      projectsWithSkills : this.props.projectsWithSkills,
-      allprojects : this.props.allprojects,
-      currentProjectsWithSkillsPage: 1,
-      currentAllProjectsPage : 1,
-      todosPerPage: 1,
-      pageNumbersForRelevantProjects: 1,
-      currentProjectWithSkillsTodos :[]
-    }
 
-
-
-    this.searchProject = this.searchProject.bind(this);
-    this.handleAllProjects = this.handleAllProjects.bind(this);
-    this.skillRelatedProjects = this.skillRelatedProjects.bind(this);
   }
-
-  static defaultProps = {
-    showDashboard: false
-  }
-
-
-
-  handleAllProjects(){
-    this.setState({
-      allProjects : true,
-      skillRelated :false
-    });
-  }
-
-  skillRelatedProjects(){
-    this.setState({
-      skillRelated : true,
-      allProjects :false
-    });
-  }
-
-  searchProject(event){
-    var  elem = event.target.value;
-    var filter = elem.toUpperCase();
-    this.setState({display : filter});
-  }
-
-  componentDidMount(){
-    this.props.dispatch(getRecommendedProjects(this.props));
-    this.props.dispatch(getAllProjects(this.props));
-  }
-
 
 
 
   render(){
-
-
     return(
-    <div>
-      <FixedNav />
+      <div>
+     <nav className="navbar navbar-default navbar1">
+       <div className="container-fluid">
+         <div className="navbar-header">
+           <a className="navbar-brand a-logo" href="#"><img className = "logo" src = "./images/icon.PNG"></img></a>
+         </div>
 
-       {this.props.showDashboard ? <DashboardDecider role={localStorage.getItem("role")} /> :
-       <div>
-        <input type="text" className ="center-block" id="myInput" onKeyUp={this.searchProject} placeholder="Search for project names.." title="Type in a name"/>
-        <div class=" news-feed panel panel-primary col-md-8 col-offset-md-4 ">
-          <div class="panel-heading "><a className ="panelheading" onClick = {this.handleAllProjects}> All Projects</a> &nbsp; <a  className ="panelheading" onClick = {this.skillRelatedProjects}>Skill Related Projects</a></div>
-          {this.state.skillRelated ?
-            <div>
-        { this.state.projectsWithSkills != undefined ?
-          <div class="panel-body ">
-            {this.state.projectsWithSkills.map(projectsWithSkill =>
-              <ProjectFeedItem display = {this.state.display} key={projectsWithSkill.project.project_id} postedBy = {projectsWithSkill.postedBy} projectskills = {projectsWithSkill.skills} projectfeeditem = {projectsWithSkill} userdBidded = {projectsWithSkill.usersBidded}/> )}
-                   </div>
-          : <div class="panel-body ">Complete your profile to to see all open projects!
-            <a className = "glyphicon glyphicon-arrow-right" onClick = {() =>   {this.props.history.push("/completeProfile")}}>   Complete your profile!</a>
-        </div>} </div>: null}
-          {this.state.allProjects ? <div>
-        { this.state.allprojects != undefined ?
-        <div class="panel-body ">
-          {this.state.allprojects.map(projectsWithSkill =>
-            <ProjectFeedItem display = {this.state.display} key={projectsWithSkill.project.project_id} postedBy = {projectsWithSkill.postedBy} projectskills = {projectsWithSkill.skills} projectfeeditem = {projectsWithSkill} userdBidded = {projectsWithSkill.usersBidded}/> )}
+     <ul className="nav navbar-nav navbar-right before-login-list">
+           <li><a onClick={() => { this.props.history.push("/login");}}> Log In </a></li>
+           <li ><a onClick={() => { this.props.history.push("/signup");}}> Sign Up </a></li>
+
+
+      </ul>
+    </div>
+  </nav>
+
+      <div className="overlay1"><h1>Hire expert freelancers for any job, online</h1></div>
+      <div className = "overlay2"><p>Millions of small businesses use Freelancer to turn their ideas into reality.</p></div>
+      <div id="myCarousel" className="carousel" data-ride="carousel">
+           <ol className="carousel-indicators">
+              <li data-target="#myCarousel" data-slide-to="0" className="active"></li>
+              <li data-target="#myCarousel" data-slide-to="1"></li>
+              <li data-target="#myCarousel" data-slide-to="2"></li>
+            </ol>
+            <div className="carousel-inner">
+                <div className="item active">
+                  <img src="./images/1.JPG"/>
+                </div>
+
+                <div className="item">
+                  <img src="./images/2.JPG"/>
+                </div>
+
+                <div className="item">
+                  <img src="./images/3.JPG"/>
+                 </div>
+             </div>
+           </div>
+           <div className="row overlay3">
+             <div className="col-sm-12 text-center">
+                 <button id="btnHire" onClick={() => { this.props.history.push("/postproject");}} className="btn btn-primary btn-md center-block" >I want to Hire</button>
+                  <button id="btnWork" onClick={() => { this.props.history.push("/signup");}} className="btn btn-secondary btn-md center-block" >I want to Work</button>
               </div>
-        : <div class="panel-body ">Complete your profile to to see all open projects!
-          <a className = "glyphicon glyphicon-arrow-right" onClick = {() =>   {this.props.history.push("/completeProfile")}}>   Complete your profile!</a>
-      </div>} </div> :null}
-        </div>
-      </div>
-      }
-      </div>
+           </div>
+     </div>
     );
 
 

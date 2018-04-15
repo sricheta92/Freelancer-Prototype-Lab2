@@ -96,11 +96,13 @@ componentWillMount(){
    let data = this.props.project.usersBidded;
    var sum = 0;
    let bidAverage;
-   data.forEach(function(user){
-     sum = sum + user.bid_price;
-   });
-   bidAverage = sum/data.length;
-   this.setState({averageBid : bidAverage});
+   if(data.length>0 ){
+     data.forEach(function(user){
+       sum = sum + user.bid_price;
+     });
+     bidAverage = sum/data.length;
+     this.setState({averageBid : bidAverage});
+   }
 }
 
 close() {
@@ -128,7 +130,7 @@ render(){
               </Modal>
 
         : null}
-      {localStorage.getItem("userid") === this.props.project.project.hiredFreelancer.userid && this.props.solutionSubmitStatus ?
+      {this.props.project.project.hiredFreelancer !== undefined && localStorage.getItem("userid") === this.props.project.project.hiredFreelancer.userid && this.props.solutionSubmitStatus ?
       <div id="proposal-panel" class="center-block"><div class="alert alert-success alert-dismissible"><a href="#" class="close" data-dismiss="alert" aria-label="close">×</a><strong>{this.props.solutionSubmitMessage}</strong></div></div> :null}
       <div className = "gaf-container" >
       <div id="projectHeader">

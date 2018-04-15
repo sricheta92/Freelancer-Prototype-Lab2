@@ -443,6 +443,12 @@ export function getUserDetails(data){
   return function(dispatch){
     return axios.get(serverURL+"/user/detail/"+data).then((response) => {
        if( response.data){
+         var arrayBufferView = new Uint8Array(response.data.user.encodeImage.data );
+         var blob = new Blob( [ arrayBufferView ], { type: "image/jpg" } );
+         var urlCreator = window.URL || window.webkitURL;
+         var imageUrl = urlCreator.createObjectURL( blob );
+         response.data.user.bloburl = imageUrl;
+         localStorage.setItem("bloburl", response.data.user.bloburl);
          dispatch({type:actionType.GET_USER_DETAIL_SUCCESS, payload: response.data})
        }
      }).catch((err) => {

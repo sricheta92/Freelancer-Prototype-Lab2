@@ -23,6 +23,7 @@ export function userReducer(state, action){
 
       case actionType.GET_USER_DETAIL_SUCCESS : newState.user = action.payload.user;
                                                 newState.skill = action.payload.skill;
+                                                newState.profile = action.payload.user;
                                                 return newState;
 
       case actionType.GET_USER_DETAIL_FAILURE : newState.user = undefined;

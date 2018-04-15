@@ -37,12 +37,8 @@ class NavbarAfterLogin extends Component{
       allprojects : this.props.allprojects,
       currentPWSPage: 1,
       currentPPage :1,
-      todosPerPage: 1
-      // currentProjectsWithSkillsPage: 1,
-      // currentAllProjectsPage : 1,
-      // todosPerPage: 1,
-      // pageNumbersForRelevantProjects: 1,
-      // currentProjectWithSkillsTodos :[]
+      todosPerPage: 10
+    
     }
 
 

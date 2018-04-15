@@ -24,9 +24,12 @@ class AsFreelancer extends Component{
     this.state ={
           display : true,
           showDashboard : true,
-          projects : this.props.projectsBiddedByMe,
+          projects :
+            this.props.projectsBiddedByMe
+
+          ,
           currentPage: 1,
-          todosPerPage: 1
+          todosPerPage: 5
     }
     this.navigateToProjectDetails = this.navigateToProjectDetails.bind(this);
     this.navigateToUserDetails = this.navigateToUserDetails.bind(this);
@@ -64,7 +67,7 @@ class AsFreelancer extends Component{
   searchProject(event){
     var  elem = event.target.value;
     var filter = elem.toUpperCase();
-    this.props.projectsBiddedByMe.map(projectpost =>  {
+    this.state.projects.map(projectpost =>  {
       if (projectpost.project.project_name.toUpperCase().indexOf(filter) > -1) {
         this.setState({
           display : true
@@ -150,7 +153,8 @@ class AsFreelancer extends Component{
       return(
         <div>
             <DashBoardSwitch />
-            {this.props.projectsBiddedByMe.length>0 ?
+
+              {this.state.projects.length>0  ?
               <div>
                 <select className="form-control filter-dropdown" id="exampleFormControlSelect1"  onChange={this.statusChange} >
                   <option>Open</option>
@@ -163,7 +167,7 @@ class AsFreelancer extends Component{
            <input type="text" className ="center-block" id="myInput" onKeyUp={this.searchProject} placeholder="Search for project names.." title="Type in a name"/>
             <table class="table table-striped">
               <thead>
-                <tr style = {{display : display}}>
+                <tr>
                   <th>Project Name</th>
                   <th>Avg Bid</th>
                   <th>Your Bid</th>
@@ -173,7 +177,7 @@ class AsFreelancer extends Component{
               <tbody>
                 {current.map(projectbidded =>
 
-                  <tr>
+                  <tr style = {{display : display}}>
                     <td> <a className = "cursor" onClick={() =>{this.navigateToProjectDetails(projectbidded)}} >{projectbidded.project.project_name} </a></td>
                     <td>$ {projectbidded.mybid.average_bid}</td>
                     <td>$ {projectbidded.mybid.bid_price}</td>

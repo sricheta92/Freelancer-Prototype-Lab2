@@ -27,7 +27,7 @@ class AsEmployer extends Component{
       display : true,
       projects : this.props.projectsPostedByMe,
       currentPage: 1,
-      todosPerPage: 1
+      todosPerPage: 5
     }
     this.navigateToProjectDetails = this.navigateToProjectDetails.bind(this);
     this.searchProject = this.searchProject.bind(this);
@@ -173,10 +173,11 @@ class AsEmployer extends Component{
               {current.map(projectpost =>
                 <tr style = {{display : display}}>
                   <td> <a className = "cursor" onClick={() =>{this.navigateToProjectDetails(projectpost)}} >{projectpost.project.project_name} </a></td>
-                  <td>{projectpost.mybid ? <div> {projectpost.mybid.average_bid }</div> : <div>$ Not bids yet </div>}</td>
+                  <td>{projectpost.mybid &&  projectpost.mybid.average_bid ? <div>$ {projectpost.mybid.average_bid }</div> : <div> No bids yet </div>}</td>
+                  {projectpost.usersBidded !== undefined && projectpost.usersBidded.length > 0 ?
                   <td> {projectpost.usersBidded.map(user =>
-                      <div><a className = "cursor" onClick = {()=> {this.navigateToUserDetails(user)}}>{user.username}</a></div>
-                    )}</td>
+                        <div><a className = "cursor" onClick = {()=> {this.navigateToUserDetails(user)}}>{user.username}</a></div>
+                      )}</td> : <td>No bids yet</td>}
                   <td>{projectpost.project.status}</td>
                 </tr>
 

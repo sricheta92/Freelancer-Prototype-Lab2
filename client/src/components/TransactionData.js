@@ -30,15 +30,16 @@ class TransactionData extends Component{
     componentWillMount(){
       var gainedMoney=0;
       var lostMoney =0;
-      this.props.transactionuser.transactionhistory.map((history) =>{
-
+      if(this.props.transactionuser.transactionhistory !== undefined){
+        this.props.transactionuser.transactionhistory.map((history) =>{
           if(Math.sign(history.money)<0){
-            lostMoney = lostMoney + Math.abs(history.money);
-          }else{
-            gainedMoney = gainedMoney+ history.money;
+              lostMoney = lostMoney + Math.abs(history.money);
+            }else{
+              gainedMoney = gainedMoney+ history.money;
+            }
           }
-        }
         );
+      }
       this.setState({
         gainedMoney:gainedMoney,
         lostMoney :lostMoney
@@ -48,15 +49,16 @@ class TransactionData extends Component{
     componentWillReceiveProps(nextProps){
       var gainedMoney=0;
       var lostMoney =0;
-      nextProps.transactionuser.transactionhistory.map((history) =>{
-
+      if(nextProps.transactionuser.transactionhistory !== undefined){
+        nextProps.transactionuser.transactionhistory.map((history) =>{
           if(Math.sign(history.money)<0){
-            lostMoney = lostMoney + Math.abs(history.money);
-          }else{
-            gainedMoney = gainedMoney+ history.money;
+              lostMoney = lostMoney + Math.abs(history.money);
+            }else{
+              gainedMoney = gainedMoney+ history.money;
+            }
           }
-        }
-        );
+          );
+      }
       this.setState({
         gainedMoney:gainedMoney,
         lostMoney :lostMoney
@@ -80,6 +82,7 @@ class TransactionData extends Component{
               <p class="card-text"><strong>Total money gained from Employer : <span className ="btn-success text-white"> $ {this.state.gainedMoney}</span></strong></p>
              </div>
            </div>
+          {this.props.transactionuser!== undefined && this.props.transactionuser.transactionhistory!== undefined ?
            <div class="table-responsive">
             <table class="table table-bordered">
               <thead>
@@ -93,7 +96,7 @@ class TransactionData extends Component{
                 </tr>
               </thead>
 
-              {this.props.transactionuser!== undefined ?
+
               <tbody>
 
                 {this.props.transactionuser.transactionhistory.map((history,index) =>
@@ -106,12 +109,10 @@ class TransactionData extends Component{
                     <td>Payment Successful</td>
                   </tr>
                 )}
-            </tbody>  :   null}
+            </tbody>
 
             </table>
-
-
-            </div>
+          </div> : <div className = "alert alert-warning"><strong>No transactions yet! Either hire some or get hired! ;-)</strong></div>}
             </div>
   </div>
     </div>

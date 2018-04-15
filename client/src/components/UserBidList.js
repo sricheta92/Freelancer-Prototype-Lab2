@@ -72,7 +72,7 @@ class UserBidList extends Component{
 
       }
     },function(){
-       alert("Email Sent!")
+       alert("Email Sent !")
        this.props.dispatch(this.props.getProjectDetails(this.state.project));
     });
 
