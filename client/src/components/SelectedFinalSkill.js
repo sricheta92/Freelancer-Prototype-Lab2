@@ -4,7 +4,7 @@ class SelectedFinalSkill extends Component{
 
   render(){
 
-    return(  <div>{this.props.finalSkill}</div>);
+    return(  <div className= "well well-mine"><strong>{this.props.finalSkill}</strong></div>);
 
     }
 
