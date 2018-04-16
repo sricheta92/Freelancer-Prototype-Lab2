@@ -10,13 +10,27 @@
 ### Prerequisites
 
 ```
-should have NodeJS and Kafka installed in your system.
+should have MongoDB, NodeJS and Kafka installed in your system.
 ```
 ## Getting Started
 
+### Start Zookeeper, Kafka and create topics
+Follow the below steps
+```
+1. Start zookeeper - $KAFKA_HOME\bin\windows\zookeeper-server-start.bat  $KAFKA_HOME\config\zookeeper.properties
+2. Start Kafka - $KAFKA_HOME\bin\windows\kafka-server-start.bat $KAFKA_HOME\config\server.properties
+3. Create Topic - $KAFKA_HOME\bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic requestTopic
+4.  Create Topic - $KAFKA_HOME\bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic responseTopic
+```
+### Start MongoDB
+Follow the below steps
+```
+1. $MONGO_HOME\mongod.exe --dbpath "C:\data"
+```
+
 ### Installing client side (running on 3000)
 
-Follow the be below steps
+Follow the below steps
 ```
 1. go to client folder
 2. run command - npm start or yarn start
@@ -24,7 +38,7 @@ Follow the be below steps
 ```
 ### Installing Server side (running on 5000)
 
-Follow the be below steps
+Follow the below steps
 ```
 1. go to server folder
 2. run command - yarn server
@@ -32,7 +46,7 @@ Follow the be below steps
 ```
 ### Installing Kafka Server side (running on 5000)
 
-Follow the be below steps
+Follow the below steps
 ```
 1. go to server folder
 2. run command - yarn server
@@ -41,7 +55,7 @@ Follow the be below steps
 
 ### Running the Mocha test cases
 
-Follow the be below steps
+Follow the below steps
 ```
 1. go to server folder
 2. run command - npm test
