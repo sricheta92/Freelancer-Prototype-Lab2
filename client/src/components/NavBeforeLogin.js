@@ -75,8 +75,8 @@ class NavbarAfterLogin extends Component{
            </div>
            <div className="row overlay3">
              <div className="col-sm-12 text-center">
-                 <button id="btnHire" onClick={() => { this.props.history.push("/postproject");}} className="btn btn-primary btn-md center-block" >I want to Hire</button>
-                  <button id="btnWork" onClick={() => { this.props.history.push("/signup");}} className="btn btn-secondary btn-md center-block" >I want to Work</button>
+                 <button id="btnHire" className="btn btn-primary btn-md center-block" >I want to Hire</button>
+                  <button id="btnWork" className="btn btn-secondary btn-md center-block" >I want to Work</button>
               </div>
            </div>
      </div>
