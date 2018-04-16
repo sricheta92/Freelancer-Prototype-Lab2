@@ -1,7 +1,7 @@
 # Freelancer Prototype
 
-http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com:3000/login
-Freelancer like scalable web application developed in MERN Stack
+* [Freelancer like scalable web application developed in MERN Stack] (http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com:3000/login)
+
 
 ![alt text](screenshots/Capture.PNG "Landing page")
 
