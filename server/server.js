@@ -18,7 +18,7 @@ var app = express();
 const port = process.env.PORT || 5000;
 //Enable CORS
 var corsOptions = {
-    origin: 'http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com:3000',
+    origin: 'http://localhost:3000',
     credentials: true,
     optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }

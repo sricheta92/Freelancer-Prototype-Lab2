@@ -22,13 +22,17 @@ class AsEmployer extends Component{
 
   constructor(props){
     super(props);
-
+    let projectsPostedByMe = this.props.projectsPostedByMe;
+    projectsPostedByMe.map(p =>
+      p.display= ""
+    );
     this.state ={
       display : true,
-      projects : this.props.projectsPostedByMe,
+      projects : projectsPostedByMe,
       currentPage: 1,
       todosPerPage: 5
     }
+
     this.navigateToProjectDetails = this.navigateToProjectDetails.bind(this);
     this.searchProject = this.searchProject.bind(this);
     this.statusChange = this.statusChange.bind(this);
@@ -40,10 +44,18 @@ class AsEmployer extends Component{
     // this.setState({
     //   projects : nextProps.projectsPostedByMe
     // })
+    // let projectsPostedByMe = this.props.projectsPostedByMe;
+    // projectsPostedByMe.map(p =>
+    //   p.display= ""
+    // );
 
     if(nextProps.projectsPostedByMe !== this.props.projectsPostedByMe){
+      let projectsPostedByMe = nextProps.projectsPostedByMe;
+      projectsPostedByMe.map(p =>
+        p.display= ""
+      );
       this.setState({
-        projects : nextProps.projectsPostedByMe
+        projects : projectsPostedByMe
       })
      }
   }
@@ -64,19 +76,30 @@ class AsEmployer extends Component{
   statusChange(event){
     var elem = event.target.value;
     var selectedProjects = [];
-    this.props.projectsPostedByMe.map(projectpost =>  {
-        if (projectpost.project.status.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
-          this.setState({
-            display : true
-          })
-          selectedProjects.push(projectpost);
-        }else{
-          this.setState({
-            display : false
-          })
-        }
+    // this.props.projectsPostedByMe.map(projectpost =>  {
+    //     if (projectpost.project.status.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
+    //       this.setState({
+    //         display : true
+    //       })
+    //       selectedProjects.push(projectpost);
+    //     }else{
+    //       this.setState({
+    //         display : false
+    //       })
+    //     }
+    //   }
+    // );
+
+    this.state.projects.map(projectpost =>  {
+      if (projectpost.project.project_name.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
+        projectpost.display= "";
+        selectedProjects.push(projectpost);
+      }else{
+        projectpost.display= "none";
       }
+     }
     );
+
     this.setState({
       projects : selectedProjects
     })
@@ -87,16 +110,15 @@ class AsEmployer extends Component{
     var filter = elem.toUpperCase();
     this.state.projects.map(projectpost =>  {
       if (projectpost.project.project_name.toUpperCase().indexOf(filter) > -1) {
-        this.setState({
-          display : true
-        })
+        projectpost.display= "";
       }else{
-        this.setState({
-          display : false
-        })
+        projectpost.display= "none";
       }
-    }
+     }
     );
+    this.setState({
+      projects: this.state.projects
+    })
   }
 
   static defaultProps = {
@@ -115,7 +137,7 @@ class AsEmployer extends Component{
 
 
   render(){
-    let display = this.state.display ? "" : "none";
+//    let display = this.state.display ? "" : "none";
 
     let renderPageNumbers = null;
     const { projects,currentPage, todosPerPage } = this.state;
@@ -171,7 +193,7 @@ class AsEmployer extends Component{
             </thead>
             <tbody>
               {current.map(projectpost =>
-                <tr style = {{display : display}}>
+                <tr style = {{display : projectpost.display}}>
                   <td> <a className = "cursor" onClick={() =>{this.navigateToProjectDetails(projectpost)}} >{projectpost.project.project_name} </a></td>
                   <td>{projectpost.mybid &&  projectpost.mybid.average_bid ? <div>$ {projectpost.mybid.average_bid }</div> : <div> No bids yet </div>}</td>
                   {projectpost.usersBidded !== undefined && projectpost.usersBidded.length > 0 ?
@@ -188,7 +210,7 @@ class AsEmployer extends Component{
            {renderPageNumbers}
          </ul>
          </div>:
-            <div className = "dashboard-heading"><strong>You havent posted a project yet!</strong>
+            <div className = "dashboard-heading"><strong>Either your filter does not match the criteria or You havent posted a project yet!</strong>
               <div className = "row">
                 <button className="btn-lg post-project-btn" onClick={() => { this.props.history.push("/postproject");}}  >Post a Project Now! </button>
               </div>

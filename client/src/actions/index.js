@@ -2,8 +2,8 @@ import * as actionType from './ActionType';
 import fileDownload from 'react-file-download';
 import axios from 'axios';
 axios.defaults.withCredentials = true;
-var serverURL = "http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com:5000"
-//var serverURL = "http://localhost:5000";
+//var serverURL = "http://ec2-13-57-249-255.us-west-1.compute.amazonaws.com:5000"
+var serverURL = "http://localhost:5000";
 
 export function checkEmail(state) {
 
@@ -286,8 +286,6 @@ export function getRecommendedProjects(props){
   return function(dispatch){
     return axios.get(serverURL+"/project/mapRecommendedProjects/"+ props.userID,{withCredentials: true} ).then((response) => {
        if( response.data){
-
-
          response.data.projectsWithSkills.map(project  =>{
            if(project!= undefined){
               if( project.usersBidded!= undefined){
@@ -298,9 +296,7 @@ export function getRecommendedProjects(props){
                         var urlCreator = window.URL || window.webkitURL;
                         var imageUrl = urlCreator.createObjectURL( blob );
                         user.bloburl = imageUrl;
-
-
-                 });
+                      });
               }
               if( project.postedBy!= undefined)
                 {
@@ -313,12 +309,9 @@ export function getRecommendedProjects(props){
          }
 
          });
-
-          dispatch({type:actionType.GET_RECOMMENDED_PROJECTS_SUCCESS, payload: response.data})
+         dispatch({type:actionType.GET_RECOMMENDED_PROJECTS_SUCCESS, payload: response.data})
        }
-
-
-     }).catch((err) => {
+}).catch((err) => {
        throw err;
         dispatch({type:actionType.GET_RECOMMENDED_PROJECTS_FAILURE, payload: err.response.data})
      })

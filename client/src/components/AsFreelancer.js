@@ -21,16 +21,18 @@ class AsFreelancer extends Component{
 
   constructor(props){
     super(props);
+    let projectsBiddedByMe = this.props.projectsBiddedByMe;
+    projectsBiddedByMe.map(p =>
+      p.display= ""
+    );
     this.state ={
           display : true,
           showDashboard : true,
-          projects :
-            this.props.projectsBiddedByMe
-
-          ,
+          projects :  projectsBiddedByMe,
           currentPage: 1,
           todosPerPage: 5
     }
+
     this.navigateToProjectDetails = this.navigateToProjectDetails.bind(this);
     this.navigateToUserDetails = this.navigateToUserDetails.bind(this);
     this.searchProject = this.searchProject.bind(this);
@@ -41,9 +43,17 @@ class AsFreelancer extends Component{
 
   componentWillReceiveProps(nextProps){
     if(nextProps.projectsBiddedByMe !== this.props.projectsBiddedByMe){
+
+      let projectsBiddedByMe = nextProps.projectsBiddedByMe;
+      projectsBiddedByMe.map(p =>
+        p.display= ""
+      );
       this.setState({
-        projects : nextProps.projectsBiddedByMe
+        projects : projectsBiddedByMe
       })
+      // this.setState({
+      //   projects : nextProps.projectsBiddedByMe
+      // })
      }
   }
 
@@ -64,21 +74,32 @@ class AsFreelancer extends Component{
     this.props.history.push("/projectDetails");
   }
 
+      //
+      // this.setState({
+      //   project: {
+      //     project : {
+      //       ...this.state.project,
+      //       status : 'HIRING',
+      //       hiredFreelancer : user,
+      //       submission :{
+      //         comment : "",
+      //         file : ""
+      //       }
+      //     }
+      //
   searchProject(event){
     var  elem = event.target.value;
     var filter = elem.toUpperCase();
     this.state.projects.map(projectpost =>  {
       if (projectpost.project.project_name.toUpperCase().indexOf(filter) > -1) {
-        this.setState({
-          display : true
-        })
+        projectpost.display= "";
       }else{
-        this.setState({
-          display : false
-        })
+        projectpost.display= "none";
       }
-    }
-    );
+    });
+    this.setState({
+      projects: this.state.projects
+    })
   }
   navigateToUserDetails(postedby){
       this.props.dispatch(this.props.hideDashboard(false))
@@ -100,26 +121,40 @@ class AsFreelancer extends Component{
   statusChange(event){
     var elem = event.target.value;
     var selectedProjects = [];
-    this.props.projectsBiddedByMe.map(projectpost =>  {
-        if (projectpost.project.status.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
-          this.setState({
-            display : true
-          })
-          selectedProjects.push(projectpost);
-        }else{
-          this.setState({
-            display : false
-          })
-        }
+
+    // this.props.projects.map(projectpost =>  {
+    //     if (projectpost.project.status.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
+    //       this.setState({
+    //         display : true
+    //       })
+    //       selectedProjects.push(projectpost);
+    //     }else{
+    //       this.setState({
+    //         display : false
+    //       })
+    //     }
+    //   }
+    // );
+    // this.setState({
+    //   projects : selectedProjects
+    // })
+    this.state.projects.map(projectpost =>  {
+      if (projectpost.project.project_name.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
+        projectpost.display= "";
+        selectedProjects.push(projectpost);
+      }else{
+        projectpost.display= "none";
       }
+     }
     );
+    
     this.setState({
       projects : selectedProjects
     })
   }
 
     render(){
-      let display = this.state.display ? "" : "none";
+    //  let display = this.state.display ? "" : "none";
 
       let renderPageNumbers = null;
       const { projects,currentPage, todosPerPage } = this.state;
@@ -177,7 +212,7 @@ class AsFreelancer extends Component{
               <tbody>
                 {current.map(projectbidded =>
 
-                  <tr style = {{display : display}}>
+                  <tr style = {{display : projectbidded.display}}>
                     <td> <a className = "cursor" onClick={() =>{this.navigateToProjectDetails(projectbidded)}} >{projectbidded.project.project_name} </a></td>
                     <td>$ {projectbidded.mybid.average_bid}</td>
                     <td>$ {projectbidded.mybid.bid_price}</td>
@@ -192,7 +227,7 @@ class AsFreelancer extends Component{
  </ul>
                     </div> :
 
-  <div className = "dashboard-heading"><strong>You havent bidded for any project now!</strong>
+  <div className = "dashboard-heading"><strong>Either your filter does not match the criteria or you havent bidded for any project now!</strong>
     <div className = "row">
       <button className="btn-lg post-project-btn" onClick={ this.goToProjectFeed}  >Bid Now! </button>
     </div>
