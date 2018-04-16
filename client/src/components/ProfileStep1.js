@@ -46,17 +46,17 @@ class ProfileStep1 extends Component{
       this.props.dispatch(getAllSkillsByCategory());
   }
   handleSkillAdded(skill){
-      let skills = this.state.skills;
-      skills.push(skill);
-      this.setState({skills : skills},function(){
+      let tempSkills = this.state.skills;
+      tempSkills.push(skill);
+      this.setState({skills : tempSkills},function(){
         this.props.dispatch(skillAdded(this.state));
       });
   }
   handleSkillRemoved(skill){
-    let skills = this.state.skills;
-    let index = skills.findIndex(x => x === skill);
-    skills.splice(index,1);
-    this.setState({skills : skills},function(){
+    let tempSkills = this.state.skills;
+    let index = tempSkills.findIndex(x => x === skill);
+    tempSkills.splice(index,1);
+    this.setState({skills : tempSkills},function(){
       this.props.dispatch(skillRemoved(this.state));
     });
 
@@ -80,7 +80,7 @@ class ProfileStep1 extends Component{
 
 
   render(){
-  
+
     let result = this.props.skillsByCategory.filter(category => category.category_id === this.state.activeId);
     return(
       <div  >

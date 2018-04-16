@@ -32,7 +32,8 @@ class BidForm extends Component{
        bidPeriodError : false,
        bidPeriodErrorMsg : "",
        user_id : localStorage.getItem("userid"),
-       project_id : this.props.projectID
+       project_id : this.props.projectID,
+       projectBidStatus : false
 
      }
     this.handleSubmitBid = this.handleSubmitBid.bind(this);
@@ -49,11 +50,18 @@ class BidForm extends Component{
          this.setState({hourlyRateError :true, hourlyRateErrorMsg: "Please enter Hourly rate"});
       }
     }else{
-        this.props.dispatch(this.props.saveBidOfUser(this.state));
+        this.props.dispatch(this.props.saveBidOfUser(this.state))
+        .then(()=>{
+          this.setState({
+            projectBidStatus : true
+          })
+        })
     }
 
 
   }
+
+
   handleBidPeriodChange(event){
     let elementValue = event.target.value;
     if(elementValue == ''){
@@ -127,7 +135,7 @@ class BidForm extends Component{
                     </fieldset>
                 </div>
 
-                {this.props.projectBidStatus ?
+                {this.state.projectBidStatus ?
                 <div id="proposal-panel">
                   <div className="BidProposal-alert alert alert-success">
                           <strong>Your bid was placed successfully!</strong>

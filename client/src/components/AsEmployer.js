@@ -91,7 +91,7 @@ class AsEmployer extends Component{
     // );
 
     this.state.projects.map(projectpost =>  {
-      if (projectpost.project.project_name.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
+      if (projectpost.project.status.toUpperCase().indexOf(elem.toUpperCase()) > -1) {
         projectpost.display= "";
         selectedProjects.push(projectpost);
       }else{
@@ -173,7 +173,7 @@ class AsEmployer extends Component{
         <DashBoardSwitch  />
 
           {this.state.projects.length>0 ?
-            <div>
+            <div> Search based on Project Status
               <select className="form-control filter-dropdown" id="exampleFormControlSelect1"  onChange={this.statusChange} >
                 <option>Open</option>
                 <option>Closed</option>

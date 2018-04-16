@@ -61,15 +61,15 @@ class NavbarAfterLogin extends Component{
             </ol>
             <div className="carousel-inner">
                 <div className="item active">
-                  <img src="./images/1.JPG"/>
+                  <img src="./images/1.jpg"/>
                 </div>
 
                 <div className="item">
-                  <img src="./images/2.JPG"/>
+                  <img src="./images/2.jpg"/>
                 </div>
 
                 <div className="item">
-                  <img src="./images/3.JPG"/>
+                  <img src="./images/3.jpg"/>
                  </div>
              </div>
            </div>

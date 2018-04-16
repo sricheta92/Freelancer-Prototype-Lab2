@@ -104,12 +104,7 @@ class UserProfile extends Component {
 
 
     updateuserProfile(option){
-      // this.setState({
-      //   userdetails: {
-      //       ...this.state.userdetails//,
-      //     profilePic: this.props.uploadname
-      //   }
-      // },function(){
+
           this.props.dispatch(this.props.updateProfile(this.state, this.props.user._id))
           .then(()=> {
             this.setState({
@@ -128,8 +123,7 @@ class UserProfile extends Component {
           });
          this.props.dispatch(this.props.getProfileDetails(this.state.userdetails));
          this.props.dispatch(this.props.getProfileDetailsonLogin(this.state.userdetails));
-        this.props.dispatch(this.props.getUserDetails(localStorage.getItem("userid")));
-      // });
+         this.props.dispatch(this.props.getUserDetails(localStorage.getItem("userid")));
     }
 
     componentWillReceiveProps(nextProps){

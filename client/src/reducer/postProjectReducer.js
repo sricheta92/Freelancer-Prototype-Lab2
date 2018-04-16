@@ -1,6 +1,9 @@
 import * as actionType from '../actions/ActionType';
 
-export function postProjectReducer(state, action){
+const defaultState={
+  projectBidStatus : false
+}
+export function postProjectReducer(state = defaultState, action){
   const newState = {...state}
   switch(action.type){
 

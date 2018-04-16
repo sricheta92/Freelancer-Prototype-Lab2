@@ -117,7 +117,7 @@ class ProfileStep2 extends Component{
 
                   </div>
                   <div className="form-group CompleteProfile-form-row gap">
-                      <span className="CompleteProfile-form-header">Contact Information</span>
+                      <span className="CompleteProfile-form-header">Contact Information (XXX-XXX-XXXX)</span>
                       <span className="CompleteProfile-form-input">
                           <input className="CompleteProfile-form-input-left large-input " type="text" ref= "phone" pattern="^\d{3}-\d{3}-\d{4}$"  placeholder="Phone Number (format: xxx-xxx-xxxx)" required />
                           <input className="CompleteProfile-form-input-right large-input " type="text"ref="city" placeholder="City" required/>
