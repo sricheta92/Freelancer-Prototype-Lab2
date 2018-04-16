@@ -37,9 +37,9 @@ Follow the be below steps
 1. go to server folder
 2. run command - yarn server
 3. you can see the node console
+```
 
-
-## Running the Mocha test cases
+### Running the Mocha test cases
 
 Follow the be below steps
 ```
