@@ -17,7 +17,7 @@ var nodemailer = require('nodemailer');
               service: 'gmail',
               auth: {
                   user: 'srichetaruj@gmail.com',
-                  pass: 'performance@48'
+                  pass: ''
               }
           });
 
